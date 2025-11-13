@@ -5,11 +5,54 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String
+  basePrice   Int
+  imageUrl    String
+  collections Collection[]
+  variants    ProductVariant[]
+  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime         @default(now())
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  sku       String  @unique // Stock keeping unit
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  size      String
+  color     String
+  price     Int
+  stock     Int      @default(0)
+  imageUrl  String? // Optional variant specific image
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([productId, size, color])
+  @@index([productId])
+  @@index([sku])
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  products    Product[]
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@index([slug])
 }
