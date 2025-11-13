@@ -6,7 +6,7 @@ export default function Header() {
         <header>
             <nav className="">
                 <ul>
-                    <Link href="/shop">
+                    <Link href="/collections">
                         SHOP
                     </Link>
                     <Link href="/lookbooks">
