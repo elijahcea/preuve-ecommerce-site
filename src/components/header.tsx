@@ -1,4 +1,5 @@
 import Link from "next/link"
+import SearchBar from "@/components/search-bar"
 
 export default function Header() {
     return (
@@ -18,9 +19,7 @@ export default function Header() {
             </nav>
             <nav>
                 <ul>
-                    <Link href="/search">
-                        SEARCH
-                    </Link>
+                    <SearchBar />
                     <Link href="/cart">
                         CART
                     </Link>
