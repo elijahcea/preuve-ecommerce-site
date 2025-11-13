@@ -20,6 +20,9 @@ export default function Header() {
             <nav>
                 <ul>
                     <SearchBar />
+                    <Link href="/account/login">
+                        LOGIN
+                    </Link>
                     <Link href="/cart">
                         CART
                     </Link>
