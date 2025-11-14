@@ -57,5 +57,6 @@ model Collection {
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
 
+  @@index([createdAt, id])
   @@index([slug])
 }
