@@ -4,11 +4,12 @@ export default async function GetProducts({ page, pageSize }: { page: number, pa
     try {
         const skip = page * pageSize;
         const products = await prisma.product.findMany({
-            take: pageSize,
-            skip: skip,
             orderBy: {
-                
-            }
+                createdAt: "desc",
+                id: "desc"
+            },
+            take: pageSize,
+            skip: skip
         })
 
         return products;
