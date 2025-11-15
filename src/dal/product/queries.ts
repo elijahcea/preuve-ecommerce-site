@@ -1,15 +1,15 @@
 import prisma from "@/lib/prisma";
 
 interface getProductParams {
-    cursor?: string, // id of last product from previous page
     pageSize?: number,
     collectionSlug?: string
+    cursor?: string, // id of last product from previous page
 }
 
-export default async function getProducts({ 
-    cursor, 
+export default async function getProducts({
     pageSize = 20,
     collectionSlug,
+    cursor
  }: getProductParams) {
 
     if (pageSize < 1 || pageSize > 100) {
