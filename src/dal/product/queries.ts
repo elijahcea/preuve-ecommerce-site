@@ -20,9 +20,9 @@ export default async function getProducts({
         const products = await prisma.product.findMany({
             take: pageSize,
             skip: cursor ? 1 : undefined,
-            cursor: {
+            cursor: cursor ? {
                 id: cursor
-            },
+            } : undefined,
             where: collectionSlug ? {
                 collections: {
                   some: {
@@ -30,10 +30,14 @@ export default async function getProducts({
                   },
                 },
             } : undefined,
-            orderBy: {
-                createdAt: "desc",
-                id: "desc"
-            }
+            orderBy: [
+                {
+                    createdAt: "desc",
+                },
+                {
+                    id: "desc"
+                }
+            ]
         })
 
         const nextCursor = products[products.length - 1].id
