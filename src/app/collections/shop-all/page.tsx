@@ -1,5 +1,13 @@
-export default function ShopAll() {
+import { Suspense } from "react"
+import ProductList from "@/components/product-list"
+import ProductListSkeleton from "../../products/loading"
+
+export default async function ShopAll() {
     return (
-        <p>This is the Shop All page.</p>
+        <>
+            <Suspense fallback={ <ProductListSkeleton /> }>
+                <ProductList />
+            </Suspense>
+        </>
     )
 }
