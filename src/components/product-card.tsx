@@ -1,11 +1,10 @@
-interface ProductCardProps {
-    id: string;
-    name: string;
-    price: number;
-    imageUrl: string;
+import { Product } from "../../generated/prisma"
+
+interface productCardProp {
+    product: Product
 }
 
-export default function ProductCard({ id, name, price, imageUrl }: ProductCardProps) {
+export default function ProductCard({ product }: productCardProp) {
     return (
         <></>
     )
