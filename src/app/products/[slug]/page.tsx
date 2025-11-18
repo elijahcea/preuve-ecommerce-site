@@ -1,15 +1,12 @@
 import { getProductBySlug } from "@/src/dal/product/queries";
+import { notFound } from "next/navigation";
 
-export default async function ProductPage({
-    params,
-  }: {
-    params: Promise<{ slug: string }>
-  }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     const product = await getProductBySlug(slug);
 
     if (!product) {
-      return <div>Product not found.</div>
+      return notFound();
     }
 
     return (
