@@ -1,6 +1,6 @@
 import prisma from "@/src/lib/prisma";
 
-export default async function getProducts({
+export async function getProducts({
     pageSize = 20,
     collectionSlug,
     cursor
@@ -21,12 +21,25 @@ export default async function getProducts({
                 id: cursor
             } : undefined,
             where: collectionSlug ? {
-                collections: {
-                  some: {
-                    slug: collectionSlug, // Filter by collection
-                  },
-                },
-            } : undefined,
+                AND: [
+                    {
+                        collections: {
+                            some: {
+                              slug: collectionSlug // Filter by collection
+                            }
+                          }                    
+                    },
+                    {
+                        isActive: {
+                            equals: true
+                        }
+                    }
+                ]
+            } : {
+                isActive: {
+                    equals: true
+                }
+            },
             orderBy: [
                 {
                     createdAt: "desc",
@@ -43,6 +56,21 @@ export default async function getProducts({
             products,
             nextCursor
         };
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function getProductBySlug(
+    slug: string
+) {
+    try {
+        const product = await prisma.product.findUnique({
+            where: {
+                slug: slug
+            }
+        })
+        return product;
     } catch (e) {
         throw e;
     }
