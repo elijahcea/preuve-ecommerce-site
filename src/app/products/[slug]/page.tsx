@@ -7,7 +7,16 @@ export default async function ProductPage({
   }) {
     const { slug } = await params;
     const product = await getProductBySlug(slug);
+
+    if (!product) {
+      return <div>Product not found.</div>
+    }
+
     return (
-        <p>This is a Product Slug page.</p>
+        <div>
+            <p>{product.name}</p>
+            <p>{product.description}</p>
+            <p>{product.basePrice}</p>
+        </div>
     )
 }
