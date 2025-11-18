@@ -1,4 +1,4 @@
-import getProducts from "@/src/dal/product/queries";
+import { getProducts } from "@/src/dal/product/queries";
 import ProductCard from "./product-card";
 
 export default async function ProductList() {
