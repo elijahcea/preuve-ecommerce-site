@@ -1,17 +1,14 @@
-import prisma from "@/lib/prisma";
-
-interface getProductParams {
-    pageSize?: number,
-    collectionSlug?: string
-    cursor?: string, // id of last product from previous page
-}
+import prisma from "@/src/lib/prisma";
 
 export default async function getProducts({
     pageSize = 20,
     collectionSlug,
     cursor
- }: getProductParams) {
-
+}: { 
+    pageSize?: number,
+    collectionSlug?: string,
+    cursor?: string 
+}) {
     if (pageSize < 1 || pageSize > 100) {
         throw new Error("pageSize must be between 1 and 100");
     }
