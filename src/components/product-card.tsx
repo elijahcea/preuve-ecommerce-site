@@ -1,11 +1,7 @@
 import Link from "next/link"
-import { Product } from "../../generated/prisma"
+import { Product } from "@/src/generated/prisma/client"
 
-interface productCardProp {
-    product: Product
-}
-
-export default function ProductCard({ product }: productCardProp) {
+export default function ProductCard({ product }: { product: Product }) {
     return (
         <div>
             <Link href={`/products/${product.slug}`}>{product.name}</Link>
