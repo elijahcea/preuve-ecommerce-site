@@ -61,14 +61,19 @@ export async function getProducts({
     }
 }
 
-export async function getProductBySlug(
-    slug: string
-) {
+export async function getProductBySlug({
+    slug, includeVariants = false
+} : {
+    slug: string, includeVariants: boolean
+    }) {
     try {
         const product = await prisma.product.findUnique({
             where: {
                 slug: slug
-            }
+            },
+            include: includeVariants ? {
+                variants: true,
+            } : undefined,
         })
         return product;
     } catch (e) {
