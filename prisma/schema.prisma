@@ -7,6 +7,12 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+
+  engineType             = "client"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
 }
 
 datasource db {
@@ -14,49 +20,115 @@ datasource db {
 }
 
 model Product {
-  id          String          @id @default(cuid())
-  slug        String          @unique
-  isActive    Boolean
-  name        String
-  description String
-  basePrice   Int
-  imageUrl    String
-  collections Collection[]
-  variants    ProductVariant[]
-  updatedAt   DateTime         @updatedAt
-  createdAt   DateTime         @default(now())
+  id                  String               @id @default(cuid())
+  slug                String               @unique
+  isActive            Boolean
+  name                String
+  description         String
+  basePrice           Int
+  imageUrl            String
+  productOptionValues ProductOptionValue[]
+  collections         Collection[]
+  variants            ProductVariant[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   @@index([createdAt, id])
   @@index([slug])
 }
 
-model ProductVariant {
-  id        String  @id @default(cuid())
-  sku       String  @unique // Stock keeping unit
-  isActive  Boolean
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String
-  size      String
-  color     String
-  price     Int
-  stock     Int      @default(0)
-  imageUrl  String? // Optional variant specific image
+model Option {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  values    OptionValue[]
+  updatedAt DateTime      @updatedAt
+  createdAt DateTime      @default(now())
+
+  @@index([slug])
+}
+
+model OptionValue {
+  id   String @id @default(cuid())
+  name String
+  slug String
+
+  option   Option @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  optionId String
+
+  productOptionValues ProductOptionValue[]
+  variantOptions      VariantOption[]
+
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
-  @@unique([productId, size, color])
+  @@unique([optionId, slug])
+  @@index([optionId])
+}
+
+model ProductOptionValue {
+  id        String  @id @default(cuid())
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  optionValue   OptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+  optionValueId String
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([productId, optionValueId])
+  @@index([productId])
+  @@index([optionValueId])
+}
+
+model VariantOption {
+  id String @id @default(cuid())
+
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variantId String
+
+  optionValue   OptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+  optionValueId String
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([variantId, optionValueId])
+  @@index([variantId])
+  @@index([optionValueId])
+}
+
+model ProductVariant {
+  id       String  @id @default(cuid())
+  sku      String  @unique // Stock keeping unit
+  isActive Boolean
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  selectedOptions VariantOption[]
+
+  price    Int
+  stock    Int     @default(0)
+  imageUrl String?
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
   @@index([productId])
   @@index([sku])
 }
 
 model Collection {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  slug        String   @unique
+  slug        String    @unique
   description String?
   products    Product[]
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
 
   @@index([slug])
 }
