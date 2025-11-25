@@ -27,6 +27,7 @@ export type ProductForDisplay = {
   name: string;
   description: string;
   basePrice: number;
+  baseStock: number;
   imageUrl: string;
   isActive: boolean;
   createdAt: Date;
