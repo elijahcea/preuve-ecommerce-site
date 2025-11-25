@@ -26,6 +26,7 @@ model Product {
   name                String
   description         String
   basePrice           Int
+  baseStock           Int                  @default(0)
   imageUrl            String
   productOptionValues ProductOptionValue[]
   collections         Collection[]
