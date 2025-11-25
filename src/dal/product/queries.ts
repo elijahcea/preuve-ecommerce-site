@@ -147,6 +147,7 @@ export async function getProductForDisplay( slug: string ) {
             name: product.name,
             description: product.description,
             basePrice: product.basePrice,
+            baseStock: product.baseStock,
             imageUrl: product.imageUrl,
             isActive: product.isActive,
             createdAt: product.createdAt,
