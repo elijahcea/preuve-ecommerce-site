@@ -108,6 +108,14 @@ async function main() {
     }
   });
 
+  const lifestyleCollection = await prisma.collection.create({
+    data: {
+      name: "Lifestyle products",
+      slug: 'lifestyle-products',
+      description: 'Exclusive products for you to live Preuve NY'
+    }
+  });
+
   console.log('✅ Created collections');
 
   // ========================================
@@ -120,9 +128,8 @@ async function main() {
       name: 'Classic T-Shirt',
       slug: 'classic-t-shirt',
       description: 'A comfortable cotton t-shirt perfect for everyday wear',
-      basePrice: 2999, // $29.99
       imageUrl: '/images/tshirt.jpg',
-      isActive: true,
+      isAvailableForSale: true,
       collections: {
         connect: [{ id: menCollection.id }]
       },
@@ -162,7 +169,7 @@ async function main() {
     await prisma.productVariant.create({
       data: {
         sku: `TSHIRT-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
-        isActive: true,
+        isAvailableForSale: true,
         productId: tshirt.id,
         price: 2999,
         stock: variant.stock,
@@ -188,9 +195,8 @@ async function main() {
       name: 'Wool Sweater',
       slug: 'wool-sweater',
       description: 'Warm and cozy wool sweater for cold days',
-      basePrice: 7999, // $79.99
       imageUrl: '/images/sweater.jpg',
-      isActive: true,
+      isAvailableForSale: true,
       collections: {
         connect: [{ id: menCollection.id }, { id: womenCollection.id }]
       },
@@ -222,7 +228,7 @@ async function main() {
     await prisma.productVariant.create({
       data: {
         sku: `SWEATER-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
-        isActive: true,
+        isAvailableForSale: true,
         productId: sweater.id,
         price: 7999,
         stock: variant.stock,
@@ -248,9 +254,8 @@ async function main() {
       name: 'Cotton Socks',
       slug: 'cotton-socks',
       description: 'Comfortable cotton socks, sold in pairs',
-      basePrice: 1299, // $12.99
       imageUrl: '/images/socks.jpg',
-      isActive: true,
+      isAvailableForSale: true,
       collections: {
         connect: [{ id: menCollection.id }]
       },
@@ -276,7 +281,7 @@ async function main() {
     await prisma.productVariant.create({
       data: {
         sku: `SOCKS-${variant.color.slug.toUpperCase()}`,
-        isActive: true,
+        isAvailableForSale: true,
         productId: socks.id,
         price: 1299,
         stock: variant.stock,
@@ -292,19 +297,53 @@ async function main() {
   console.log('✅ Created Cotton Socks with variants');
 
   // ========================================
+  // 5. CREATE PRODUCT 4: Cotton Mug (No options)
+  // ========================================
+  console.log('Creating Mug...');
+  // Product with no options
+  const mug = await prisma.product.create({
+    data: {
+      name: 'Mug',
+      slug: 'mug',
+      description: 'Exclusive mug for the holiday season',
+      imageUrl: '/images/mug.jpg',
+      isAvailableForSale: true,
+      collections: {
+        connect: [{ id: lifestyleCollection.id }]
+      }
+    }
+  });
+
+  console.log('✅ Created Cotton Socks with variants');
+
+  console.log('Created Mug variant...')
+
+  await prisma.productVariant.create({
+    data: {
+      sku: `MUG`,
+      isAvailableForSale: true,
+      productId: mug.id,
+      price: 7999,
+      stock: 10,
+    }
+  });
+
+
+  // ========================================
   // SUMMARY
   // ========================================
   console.log('\n🎉 Seed completed successfully!\n');
   console.log('Summary:');
   console.log('- 3 Options (Color, Size, Material)');
   console.log('- 17 Option Values');
-  console.log('- 2 Collections');
-  console.log('- 3 Products');
+  console.log('- 3 Collections');
+  console.log('- 4 Products');
   console.log('- 21 Product Variants');
   console.log('\nYou can now test with:');
   console.log('- /products/classic-t-shirt (2 options: Color & Size)');
   console.log('- /products/wool-sweater (2 options: Color & Size)');
   console.log('- /products/cotton-socks (1 option: Color only)');
+  console.log('- /products/mug (No options)');
 }
 
 main()
