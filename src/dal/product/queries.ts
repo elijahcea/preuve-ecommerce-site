@@ -1,6 +1,9 @@
+import "server-only";
 import prisma from "@/src/lib/prisma";
-import { ProductVariantForDisplay } from "@/src/lib/types";
-import { VariantSelectedOption } from "@/src/lib/types";
+import { ProductVariant } from "@/src/lib/types";
+import { SelectedOption } from "@/src/lib/types";
+import { Cart } from "@/src/lib/types";
+import { cookies } from "next/headers";
 
 export async function getProducts({
     pageSize = 20,
@@ -32,13 +35,13 @@ export async function getProducts({
                           }                    
                     },
                     {
-                        isActive: {
+                        isAvailableForSale: {
                             equals: true
                         }
                     }
                 ]
             } : {
-                isActive: {
+                isAvailableForSale: {
                     equals: true
                 }
             },
@@ -63,20 +66,7 @@ export async function getProducts({
     }
 }
 
-export async function getProductBySlug( slug: string ) {
-    try {
-        const product = await prisma.product.findUnique({
-            where: {
-                slug: slug
-            }
-        })
-        return product;
-    } catch (e) {
-        throw e;
-    }
-}
-
-export async function getProductForDisplay( slug: string ) {
+export async function getProduct( slug: string ) {
     try {
         const product = await prisma.product.findUnique({
             where: {
@@ -116,7 +106,6 @@ export async function getProductForDisplay( slug: string ) {
             if (!optionsMap.has(opt.name)) {
                 optionsMap.set(opt.name, {
                     name: opt.name,
-                    slug: opt.slug,
                     values: []
                 });
             }
@@ -124,20 +113,19 @@ export async function getProductForDisplay( slug: string ) {
         });
 
         // Transform variants
-        const transformedVariants: ProductVariantForDisplay[] = product.variants.map((variant) => {
-            const selectedOptions: VariantSelectedOption[] = variant.selectedOptions.map((so) => ({
-            name: so.optionValue.option.name,
-            value: so.optionValue.name
+        const transformedVariants: ProductVariant[] = product.variants.map((variant) => {
+            const selectedOptions: SelectedOption[] = variant.selectedOptions.map((so) => ({
+                name: so.optionValue.option.name,
+                value: so.optionValue.name
             }));
 
             return {
-            id: variant.id,
-            sku: variant.sku,
-            price: variant.price,
-            stock: variant.stock,
-            isActive: variant.isActive,
-            imageUrl: variant.imageUrl,
-            selectedOptions
+                id: variant.id,
+                sku: variant.sku,
+                price: variant.price,
+                isAvailableForSale: variant.isAvailableForSale,
+                imageUrl: variant.imageUrl,
+                selectedOptions
             };
         });
 
@@ -146,10 +134,8 @@ export async function getProductForDisplay( slug: string ) {
             slug: product.slug,
             name: product.name,
             description: product.description,
-            basePrice: product.basePrice,
-            baseStock: product.baseStock,
             imageUrl: product.imageUrl,
-            isActive: product.isActive,
+            isAvailableForSale: product.isAvailableForSale,
             createdAt: product.createdAt,
             updatedAt: product.updatedAt,
             options: Array.from(optionsMap.keys()),
