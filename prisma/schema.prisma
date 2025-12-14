@@ -22,11 +22,9 @@ datasource db {
 model Product {
   id                  String               @id @default(cuid())
   slug                String               @unique
-  isActive            Boolean
+  isAvailableForSale  Boolean
   name                String
   description         String
-  basePrice           Int
-  baseStock           Int                  @default(0)
   imageUrl            String
   productOptionValues ProductOptionValue[]
   collections         Collection[]
@@ -102,14 +100,16 @@ model VariantOption {
 }
 
 model ProductVariant {
-  id       String  @id @default(cuid())
-  sku      String  @unique // Stock keeping unit
-  isActive Boolean
+  id                 String  @id @default(cuid())
+  sku                String  @unique // Stock keeping unit
+  isAvailableForSale Boolean
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 
   selectedOptions VariantOption[]
+
+  carts CartItem[]
 
   price    Int
   stock    Int     @default(0)
@@ -132,4 +132,30 @@ model Collection {
   createdAt   DateTime  @default(now())
 
   @@index([slug])
+}
+
+model Cart {
+  id             String     @id @default(cuid())
+  items          CartItem[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([id])
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  quantity  Int
+
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
+
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariantId String
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([id])
 }
