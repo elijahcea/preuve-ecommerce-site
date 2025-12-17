@@ -1,9 +1,10 @@
 import "server-only";
 
 import prisma from "@/src/lib/prisma";
-import { Cart, CartItem } from "@/src/lib/types";
+import { Cart, CartItem, SelectedOption } from "@/src/lib/types";
 import { cookies } from "next/headers";
 import { calculateCartTotals, calculateItemCost } from "./helpers";
+import { createProductHref } from "@/src/lib/helpers";
 
 export async function getCart(): Promise<Cart | undefined> {
     try {
@@ -28,9 +29,11 @@ export async function getCart(): Promise<Cart | undefined> {
                                 price: true,
                                 isAvailableForSale: true,
                                 imageUrl: true,
+                                imageAlt: true,
                                 product: {
                                     select: {
-                                        name: true
+                                        name: true,
+                                        slug: true
                                     }
                                 },
                                 selectedOptions: {
@@ -57,6 +60,13 @@ export async function getCart(): Promise<Cart | undefined> {
         if (!res) return undefined;
 
         const cartItems: CartItem[] = res.items.map(item => {
+            const selectedOptions: SelectedOption[] = item.productVariant.selectedOptions.map(so => {
+                return {
+                    name: so.optionValue.option.name,
+                    value: so.optionValue.name
+                }
+            })
+
             return {
                 id: item.id,
                 totalCost: calculateItemCost(item.productVariant.price, item.quantity),
@@ -67,12 +77,9 @@ export async function getCart(): Promise<Cart | undefined> {
                     isAvailableForSale: item.productVariant.isAvailableForSale,
                     price: item.productVariant.price,
                     imageUrl: item.productVariant.imageUrl,
-                    selectedOptions: item.productVariant.selectedOptions.map(so => {
-                        return {
-                            name: so.optionValue.option.name,
-                            value: so.optionValue.name
-                        }
-                    })
+                    imageAlt: item.productVariant.imageAlt,
+                    href: createProductHref(item.productVariant.product.slug, selectedOptions),
+                    selectedOptions
                 }
             }
         })
