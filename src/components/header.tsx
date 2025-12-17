@@ -1,13 +1,8 @@
-'use client'
-
 import Link from "next/link"
 import SearchBar from "@/src/components/search-bar"
 import CartModal from "@/src/components/cart/cart-modal"
-import { useCartContext } from "../contexts/cart-provider"
 
 export default function Header() {
-    const { cart } = useCartContext();
-
     return (
         <header>
             <nav className="">
@@ -29,15 +24,9 @@ export default function Header() {
                     <Link href="/account/login">
                         LOGIN
                     </Link>
-                    <Link href="/cart">
-                        CART 
-                        {cart?.totalQuantity && (
-                            <p>{cart?.totalQuantity}</p>
-                        )}
-                    </Link>
+                    <CartModal />
                 </ul>
             </nav>
-            <CartModal />
         </header>
     )
 }
