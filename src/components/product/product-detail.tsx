@@ -3,7 +3,7 @@
 import { Product } from "../../lib/types";
 import { useProductContext } from "../../contexts/product-provider";
 import VariantSelector from "./variant-selector";
-import AddToCartBtn from "../cart/add-to-cart";
+import AddToCartBtn from "../cart/add-to-cart-btn";
 
 export default function ProductDetail({ product }: { product: Product }) {
     const { state } = useProductContext();
