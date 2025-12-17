@@ -1,8 +1,9 @@
 'use server';
 
 import { cookies } from "next/headers";
-import { ProductVariant } from "../lib/types";
-import { createCart, addCartItem } from "../dal/cart/mutations";
+import { CartItem } from "../lib/types";
+import { ItemAction } from "../contexts/cart-provider";
+import { createCart, addCartItem, removeCartItem, updateCartItem } from "../dal/cart/mutations";
 
 export async function createCartAndSetCookie() {
     const cart = await createCart();
@@ -12,15 +13,51 @@ export async function createCartAndSetCookie() {
     (await cookies()).set("cartId", cart.id, { maxAge: 604800 });
 }
 
-export async function addItemAction(prevState: string | undefined, variant: ProductVariant) {
-    if (!variant) return "Please select a product variant."
+export async function addItemAction(
+    prevState: string | undefined, 
+    variantId: string | undefined
+) {
+    if (!variantId) return "Please select a product variant."
 
-    const cartId = await (await cookies()).get("cartId");
-    if (!cartId) return "Error adding item to cart."
+    const cartIdCookie = await (await cookies()).get("cartId");
+    if (!cartIdCookie) return "Error adding item to cart."
 
     try {
-        await addCartItem(cartId.value.toString(), variant);
+        await addCartItem(cartIdCookie.value.toString(), variantId);
     } catch (e) {
-        return `Error adding item to cart: ${e}`
+        return `Error adding item to cart: ${e}`;
+    }
+}
+
+export async function updateItemAction(
+    prevState: string | undefined, 
+    payload: {
+        item: CartItem,
+        action: ItemAction
+    }
+) {
+    const { item, action } = payload;
+    const cartIdCookie = await (await cookies()).get("cartId");
+    if (!cartIdCookie) return "Error updating cart."
+
+    const cartId = cartIdCookie.value.toString();
+
+    try {
+        if (action === "delete") {
+            await removeCartItem(cartId, item.merchandise.id);
+            return;
+        };
+
+        const newQuantity = action === "plus" ? item.quantity + 1 : item.quantity - 1;
+
+        if (newQuantity <= 0) {
+            await removeCartItem(cartId, item.merchandise.id);
+            return;
+        };
+
+        await updateCartItem(cartId, item.merchandise.id, action);
+
+    } catch (e) {
+        return `Error updating cart: ${e}`;
     }
 }
