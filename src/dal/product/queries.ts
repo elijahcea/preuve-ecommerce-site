@@ -2,8 +2,7 @@ import "server-only";
 import prisma from "@/src/lib/prisma";
 import { ProductVariant } from "@/src/lib/types";
 import { SelectedOption } from "@/src/lib/types";
-import { Cart } from "@/src/lib/types";
-import { cookies } from "next/headers";
+import { createProductHref } from "@/src/lib/helpers";
 
 export async function getProducts({
     pageSize = 20,
@@ -125,6 +124,8 @@ export async function getProduct( slug: string ) {
                 price: variant.price,
                 isAvailableForSale: variant.isAvailableForSale,
                 imageUrl: variant.imageUrl,
+                imageAlt: variant.imageAlt,
+                href: createProductHref(product.slug, selectedOptions),
                 selectedOptions
             };
         });
