@@ -14,6 +14,8 @@ export type ProductVariant = {
   price: number;
   isAvailableForSale: boolean;
   imageUrl: string | null;
+  imageAlt: string | null;
+  href: string;
   selectedOptions: SelectedOption[];
 };
 
@@ -22,7 +24,6 @@ export type Product = {
   slug: string;
   name: string;
   description: string;
-  imageUrl: string;
   isAvailableForSale: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -57,5 +58,7 @@ export type Merchandise = {
   price: number;
   isAvailableForSale: boolean;
   imageUrl: string | null;
+  imageAlt: string | null;
+  href: string
   selectedOptions: SelectedOption[];  
 }
