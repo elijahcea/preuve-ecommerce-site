@@ -114,6 +114,7 @@ model ProductVariant {
   price    Int
   stock    Int     @default(0)
   imageUrl String?
+  imageAlt String?
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
