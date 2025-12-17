@@ -9,7 +9,7 @@ type CartContextType = {
     updateCartItem: (merchandiseId: string, action: ItemAction) => void
 }
 
-type ItemAction = "plus" | "minus" | "delete";
+export type ItemAction = "plus" | "minus" | "delete";
 
 type CartAction =
     | {
@@ -47,6 +47,8 @@ function createNewItem(variant: ProductVariant, product: Product): CartItem {
             price: variant.price,
             isAvailableForSale: variant.isAvailableForSale,
             imageUrl: variant.imageUrl,
+            imageAlt: variant.imageAlt,
+            href: variant.href,
             selectedOptions: variant.selectedOptions
         }
     }
