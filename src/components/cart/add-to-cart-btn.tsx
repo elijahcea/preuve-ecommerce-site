@@ -1,21 +1,25 @@
+'use client';
+
 import { addItemAction } from "@/src/actions/cart";
 import { useCartContext } from "@/src/contexts/cart-provider";
 import { Product, ProductVariant } from "@/src/lib/types";
 import { useActionState } from "react";
+import LoadingSpinner from "../loading-spinner";
 
 export default function AddToCartBtn({ variant, product }: { variant: ProductVariant | undefined, product: Product }) {
     const { addCartItem } = useCartContext();
     const [message, formAction, isPending] = useActionState(addItemAction, undefined);
+    const addItem = formAction.bind(null, variant?.id);
 
     return (
         <form action={async () => {
             if (!variant) return;
-            await formAction(variant);
+            await addItem();
             addCartItem(variant, product);
         }}>
             <button
-                aria-disabled={!variant?.isAvailableForSale}
-                disabled={!variant?.isAvailableForSale}
+                aria-disabled={!variant?.isAvailableForSale || isPending}
+                disabled={!variant?.isAvailableForSale || isPending}
                 className={`
                     w-full px-6 py-3 rounded-lg font-semibold transition-colors
                     ${variant?.isAvailableForSale
@@ -28,7 +32,7 @@ export default function AddToCartBtn({ variant, product }: { variant: ProductVar
                 {!variant 
                     ? "Please select all options"
                     : variant.isAvailableForSale
-                        ? (isPending ? "Adding to cart..." : "Add to cart")
+                        ? (isPending ? <LoadingSpinner /> : "Add to cart")
                         : "Out of stock"
                 }
             </button>
