@@ -92,6 +92,14 @@ async function main() {
   // ========================================
   console.log('📦 Creating collections...');
 
+  const shopAllCollection = await prisma.collection.create({
+    data: {
+      name: "Shop-All",
+      slug: 'shop-all',
+      description: 'All available products'
+    }
+  });
+
   const menCollection = await prisma.collection.create({
     data: {
       name: "Men's Clothing",
@@ -128,10 +136,10 @@ async function main() {
       name: 'Classic T-Shirt',
       slug: 'classic-t-shirt',
       description: 'A comfortable cotton t-shirt perfect for everyday wear',
-      imageUrl: '/images/tshirt.jpg',
+      featuredImageURL: 'https://www.aimeleondore.com/cdn/shop/files/FW25CT080_BOTANICALGARDEN_3_1600x.jpg?v=1764088217',
       isAvailableForSale: true,
       collections: {
-        connect: [{ id: menCollection.id }]
+        connect: [{ id: menCollection.id }, { id: shopAllCollection.id }]
       },
       productOptionValues: {
         create: [
@@ -171,7 +179,7 @@ async function main() {
         sku: `TSHIRT-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
         isAvailableForSale: true,
         productId: tshirt.id,
-        price: 2999,
+        price: 3000,
         stock: variant.stock,
         selectedOptions: {
           create: [
@@ -195,10 +203,10 @@ async function main() {
       name: 'Wool Sweater',
       slug: 'wool-sweater',
       description: 'Warm and cozy wool sweater for cold days',
-      imageUrl: '/images/sweater.jpg',
+      featuredImageURL:  'https://www.aimeleondore.com/cdn/shop/files/KS022_WINERY_1_600x.jpg?v=1755640460',
       isAvailableForSale: true,
       collections: {
-        connect: [{ id: menCollection.id }, { id: womenCollection.id }]
+        connect: [{ id: menCollection.id }, { id: womenCollection.id }, { id: shopAllCollection.id }]
       },
       productOptionValues: {
         create: [
@@ -230,7 +238,7 @@ async function main() {
         sku: `SWEATER-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
         isAvailableForSale: true,
         productId: sweater.id,
-        price: 7999,
+        price: 8000,
         stock: variant.stock,
         selectedOptions: {
           create: [
@@ -254,10 +262,10 @@ async function main() {
       name: 'Cotton Socks',
       slug: 'cotton-socks',
       description: 'Comfortable cotton socks, sold in pairs',
-      imageUrl: '/images/socks.jpg',
+      featuredImageURL: 'https://www.aimeleondore.com/cdn/shop/files/4x5_FW24D1_ACC_FW24AS058_KALAMATA_4544_1600x.jpg?v=1724172011',
       isAvailableForSale: true,
       collections: {
-        connect: [{ id: menCollection.id }]
+        connect: [{ id: menCollection.id }, { id: shopAllCollection.id }]
       },
       productOptionValues: {
         create: [
@@ -283,7 +291,7 @@ async function main() {
         sku: `SOCKS-${variant.color.slug.toUpperCase()}`,
         isAvailableForSale: true,
         productId: socks.id,
-        price: 1299,
+        price: 1300,
         stock: variant.stock,
         selectedOptions: {
           create: [
@@ -297,37 +305,36 @@ async function main() {
   console.log('✅ Created Cotton Socks with variants');
 
   // ========================================
-  // 5. CREATE PRODUCT 4: Cotton Mug (No options)
+  // 5. CREATE PRODUCT 4: Cotton Scarf (No options)
   // ========================================
-  console.log('Creating Mug...');
+  console.log('Creating Scarf...');
   // Product with no options
   const mug = await prisma.product.create({
     data: {
-      name: 'Mug',
-      slug: 'mug',
-      description: 'Exclusive mug for the holiday season',
-      imageUrl: '/images/mug.jpg',
+      name: 'Scarf',
+      slug: 'scarf',
+      description: 'Exclusive Scarf for the holiday season',
+      featuredImageURL: 'https://www.aimeleondore.com/cdn/shop/files/FW25AS020_PorscheScarf_TangoRed_22_600x.jpg?v=1760551547',
       isAvailableForSale: true,
       collections: {
-        connect: [{ id: lifestyleCollection.id }]
+        connect: [{ id: lifestyleCollection.id }, { id: shopAllCollection.id }]
       }
     }
   });
 
-  console.log('✅ Created Cotton Socks with variants');
-
-  console.log('Created Mug variant...')
+  console.log('✅ Created Scarf with variants');
 
   await prisma.productVariant.create({
     data: {
       sku: `MUG`,
       isAvailableForSale: true,
       productId: mug.id,
-      price: 7999,
+      price: 8000,
       stock: 10,
     }
   });
 
+  console.log('Created Scarf variant...')
 
   // ========================================
   // SUMMARY
@@ -343,7 +350,7 @@ async function main() {
   console.log('- /products/classic-t-shirt (2 options: Color & Size)');
   console.log('- /products/wool-sweater (2 options: Color & Size)');
   console.log('- /products/cotton-socks (1 option: Color only)');
-  console.log('- /products/mug (No options)');
+  console.log('- /products/scarf (No options)');
 }
 
 main()
