@@ -11,10 +11,10 @@ export type SelectedOption = {
 export type ProductVariant = {
   id: string;
   sku: string;
+  name: string;
   price: number;
   isAvailableForSale: boolean;
-  imageUrl: string | null;
-  imageAlt: string | null;
+  image?: Image;
   href: string;
   selectedOptions: SelectedOption[];
 };
@@ -24,13 +24,17 @@ export type Product = {
   slug: string;
   name: string;
   description: string;
+  priceRange: {
+    minVariantPrice: number;
+    maxVariantPrice: number;
+  };
   isAvailableForSale: boolean;
+  featuredImage?: Image;
   createdAt: Date;
   updatedAt: Date;
   
-  // Transformed/computed fields
-  options: string[];  // ["Color", "Size"]
-  optionsWithValues: ProductOption[];  // [{ name: "Color", values: [...] }]
+  options: string[];
+  optionsWithValues: ProductOption[];
   variants: ProductVariant[];
 };
 
@@ -49,16 +53,12 @@ export type CartItem = {
   id: string | undefined;
   totalCost: number;
   quantity: number;
-  merchandise: Merchandise;
+  merchandise: ProductVariant;
 };
 
-export type Merchandise = {
-  id: string;
-  name: string;
-  price: number;
-  isAvailableForSale: boolean;
-  imageUrl: string | null;
-  imageAlt: string | null;
-  href: string
-  selectedOptions: SelectedOption[];  
-}
+export type Image = {
+  url: string | null;
+  altText?: string | null;
+  width?: number;
+  height?: number;
+};

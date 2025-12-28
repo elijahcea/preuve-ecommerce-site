@@ -1,37 +1,73 @@
 import "server-only";
-import prisma from "@/src/lib/prisma";
-import { ProductVariant } from "@/src/lib/types";
-import { SelectedOption } from "@/src/lib/types";
-import { createProductHref } from "@/src/lib/helpers";
 
-export async function getProducts({
-    pageSize = 20,
+import prisma from "@/src/lib/prisma";
+import { Prisma } from "@/src/generated/prisma/client";
+import { formatProduct } from "@/src/dal/helpers";
+
+const includeProductWithOptionsAndVariants = {
+    productOptionValues: {
+        include: {
+            optionValue: {
+                include: {
+                    option: true
+                }
+            }
+        }
+    },
+    variants: {
+        include: {
+            selectedOptions: {
+                include: {
+                    optionValue: {
+                        include: {
+                            option: true
+                        }
+                    }
+                }
+            }
+        }
+    }
+} satisfies Prisma.ProductInclude;
+
+export type ProductWithOptionsAndVariants = Prisma.ProductGetPayload<{
+    include: typeof includeProductWithOptionsAndVariants
+}>;
+
+export async function getCollectionProducts({
     collectionSlug,
+    pageSize = 20,
     cursor
-}: { 
+}: {
+    collectionSlug: string,
     pageSize?: number,
-    collectionSlug?: string,
-    cursor?: string 
+    cursor?: string
 }) {
     if (pageSize < 1 || pageSize > 100) {
         throw new Error("pageSize must be between 1 and 100");
     }
 
     try {
+        const collection = await prisma.collection.findUnique({
+            where: {
+                slug: collectionSlug
+            }
+        })
+        if (!collection) return null;
+
         const products = await prisma.product.findMany({
             take: pageSize,
             skip: cursor ? 1 : undefined,
             cursor: cursor ? {
                 id: cursor
             } : undefined,
-            where: collectionSlug ? {
+            where: {
                 AND: [
                     {
                         collections: {
                             some: {
-                              slug: collectionSlug // Filter by collection
+                                slug: collectionSlug
                             }
-                          }                    
+                        }                    
                     },
                     {
                         isAvailableForSale: {
@@ -39,10 +75,6 @@ export async function getProducts({
                         }
                     }
                 ]
-            } : {
-                isAvailableForSale: {
-                    equals: true
-                }
             },
             orderBy: [
                 {
@@ -51,13 +83,20 @@ export async function getProducts({
                 {
                     id: "desc"
                 }
-            ]
+            ],
+            include: includeProductWithOptionsAndVariants
         })
+
+        const formattedProducts = products.map(product => formatProduct(product));
 
         const nextCursor = products[products.length - 1].id
 
         return {
-            products,
+            collection: {
+                title: collection.name,
+                description: collection.description
+            },
+            formattedProducts,
             nextCursor
         };
     } catch (e) {
@@ -70,79 +109,12 @@ export async function getProduct( slug: string ) {
         const product = await prisma.product.findUnique({
             where: {
                 slug: slug
-            },       
-            include: {
-                productOptionValues: {
-                    include: {
-                        optionValue: {
-                            include: {
-                                option: true,
-                            }
-                        }
-                    }
-                },
-                variants: {
-                    include: {
-                        selectedOptions: {
-                            include: {
-                                optionValue: {
-                                    include: {
-                                        option: true,
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-            }
+            },     
+            include: includeProductWithOptionsAndVariants
         })
         if (!product) return null;
 
-        const optionsMap = new Map();
-
-        product.productOptionValues.forEach((pov) => {
-            const opt = pov.optionValue.option;
-            if (!optionsMap.has(opt.name)) {
-                optionsMap.set(opt.name, {
-                    name: opt.name,
-                    values: []
-                });
-            }
-            optionsMap.get(opt.name).values.push(pov.optionValue.name);
-        });
-
-        // Transform variants
-        const transformedVariants: ProductVariant[] = product.variants.map((variant) => {
-            const selectedOptions: SelectedOption[] = variant.selectedOptions.map((so) => ({
-                name: so.optionValue.option.name,
-                value: so.optionValue.name
-            }));
-
-            return {
-                id: variant.id,
-                sku: variant.sku,
-                price: variant.price,
-                isAvailableForSale: variant.isAvailableForSale,
-                imageUrl: variant.imageUrl,
-                imageAlt: variant.imageAlt,
-                href: createProductHref(product.slug, selectedOptions),
-                selectedOptions
-            };
-        });
-
-        return {
-            id: product.id,
-            slug: product.slug,
-            name: product.name,
-            description: product.description,
-            imageUrl: product.imageUrl,
-            isAvailableForSale: product.isAvailableForSale,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt,
-            options: Array.from(optionsMap.keys()),
-            optionsWithValues: Array.from(optionsMap.values()),
-            variants: transformedVariants
-        };
+        return formatProduct(product);
     } catch (e) {
         throw e;
     }
