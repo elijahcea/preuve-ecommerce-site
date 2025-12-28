@@ -33,7 +33,7 @@ export default function VariantSelector({
             <select
               required
               value={state[optionNameLowerCase] || ""} 
-              className='w-full p-1 border border-transparent hover:border-gray-400/50 bg-gray-400/15' 
+              className='w-full p-1 rounded-xs border border-transparent transition-border ease-in-out duration-250 hover:border-gray-400/50 bg-gray-400/15' 
               onChange={(e) =>{
                 const newState = updateOption(optionNameLowerCase, e.target.value);
                 updateURL(newState);
