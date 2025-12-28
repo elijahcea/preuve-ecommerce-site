@@ -19,9 +19,9 @@ export default function CartModal() {
     const currency = "USD";
 
     useEffect(() => {
-        if (!cart) {
-            createCartAndSetCookie();
-        }
+      if (!cart) {
+        createCartAndSetCookie();
+      }
     }, [cart]);
 
   return (
