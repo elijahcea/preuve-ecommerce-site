@@ -2,8 +2,8 @@ import Link from "next/link"
 
 export default function Footer() {
     return (
-        <footer>
-            <ul>
+        <footer className="flex mt-auto justify-between p-5 text-xs">
+            <ul className="flex gap-5">
                 <Link href="/faq">FAQ</Link>
                 <Link href="/terms">TERMS & CONDITIONS</Link>
                 <a href="https://www.instagram.com/" target="_blank">INSTRAGRAM</a>
