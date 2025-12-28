@@ -22,7 +22,7 @@ export default function AddToCartBtn({ variant, product }: { variant: ProductVar
                 aria-disabled={!variant?.isAvailableForSale || isPending}
                 disabled={!variant?.isAvailableForSale || isPending}
                 className={`
-                    w-full px-6 py-3 rounded-lg font-semibold transition-opacity ease-in-out duration-250 text-white bg-foreground
+                    w-full px-6 py-3 rounded-xs font-semibold transition-opacity ease-in-out duration-250 text-white bg-foreground
                     ${!variant?.isAvailableForSale || isPending
                         ? "cursor-not-allowed opacity-50"
                         : "cursor-pointer hover:opacity-75"
