@@ -1,6 +1,6 @@
-export function ProductListSkeleton() {
+export function CollectionPageSkeleton() {
     return (
-        <p>Products loading...</p>
+        <p>Collection loading...</p>
     )
 }
 
