@@ -28,10 +28,10 @@ export default function CartModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="cursor-pointer rounded-md px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
+        className="relative cursor-pointer rounded-md px-2.5 py-1.5 text-sm font-semibold transition-bg ease-in-out duration-250 text-gray-900 hover:bg-gray-950/10"
       >
         <ShoppingCartIcon aria-hidden="true" className="size-6" />
-        {!cart?.totalQuantity ? <></> : <div>{cart?.totalQuantity}</div> }
+        {!cart?.totalQuantity ? <></> : <div className='absolute bottom-5 left-6 bg-foreground rounded-full h-4 w-4 text-background text-xs'>{cart?.totalQuantity}</div> }
       </button>
       <Dialog open={isOpen} onClose={setIsOpen} className="relative z-10">
         <DialogBackdrop
