@@ -8,7 +8,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ShoppingCartIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
-import Price from './price';
+import Price from '../price';
 import EditItemQuantityBtn from './edit-item-quantity-btn';
 
 export default function CartModal() {
@@ -25,10 +25,10 @@ export default function CartModal() {
     }, [cart]);
 
   return (
-    <div>
+    <>
       <button
         onClick={() => setIsOpen(true)}
-        className="cursor-pointer rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
+        className="cursor-pointer rounded-md px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
       >
         <ShoppingCartIcon aria-hidden="true" className="size-6" />
         {!cart?.totalQuantity ? <></> : <div>{cart?.totalQuantity}</div> }
@@ -36,7 +36,7 @@ export default function CartModal() {
       <Dialog open={isOpen} onClose={setIsOpen} className="relative z-10">
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-gray-500/75 transition-opacity duration-150 ease-in-out data-closed:opacity-0"
+          className="fixed inset-0 bg-gray-500/75 transition-opacity duration-250 ease-in-out data-closed:opacity-0"
         />
 
         <div className="fixed inset-0 overflow-hidden">
@@ -44,7 +44,7 @@ export default function CartModal() {
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
               <DialogPanel
                 transition
-                className="pointer-events-auto w-screen max-w-md transform transition duration-150 ease-in-out data-closed:translate-x-full sm:duration-700"
+                className="pointer-events-auto w-screen max-w-md transform transition duration-250 ease-in-out data-closed:translate-x-full sm:duration-350"
               >
                 <div className="flex h-full flex-col overflow-y-auto bg-white shadow-xl">
                   <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
@@ -74,9 +74,9 @@ export default function CartModal() {
                             <ul role="list" className="-my-6 divide-y divide-gray-200">
                                 {cart?.items.map((item) => (
                                     <li key={item.merchandise.id} className="flex py-6">
-                                        {item.merchandise.imageUrl != null ? (
+                                        {item.merchandise.image?.url ? (
                                             <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                <Image alt={item.merchandise.imageAlt || ""} src={item.merchandise.imageUrl} className="size-full object-cover" />
+                                                <Image alt={item.merchandise.image.altText || item.merchandise.name} src={item.merchandise.image.url} className="size-full object-cover" />
                                             </div>  
                                         ) : <></>}
 
@@ -144,6 +144,6 @@ export default function CartModal() {
           </div>
         </div>
       </Dialog>
-    </div>
+    </>
   )
 }
