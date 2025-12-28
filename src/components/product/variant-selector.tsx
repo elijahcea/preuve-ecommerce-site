@@ -17,36 +17,37 @@ export default function VariantSelector({
   variants: ProductVariant[]
 }) {
   const { state, updateOption, updateURL } = useProductContext();
-  const hasNoOptionsOrJustOneOption =
-    !options.length || (options.length === 1 && options[0]?.values.length === 1);
 
-  if (hasNoOptionsOrJustOneOption) {
+  if (!options.length) {
     return null;
   }
 
   return (
-    <div>
+    <div className='grid grid-cols-2 gap-3'>
       {options.map(option => {
         const optionNameLowerCase = option.name.toLowerCase();
 
         return (
           <fieldset key={option.name}>
             <legend>{option.name}</legend>
-            {option.values.map(value => {
-              const isActive = state[optionNameLowerCase] === value;
-
-              return (
-                <button
-                  key={value}
-                  onClick={() => {
-                    const newState = updateOption(optionNameLowerCase, value);
-                    updateURL(newState);
-                  }}
-                >
-                  {isActive ? `Active! ${value}` : value }
-                </button>
-              )
-            })}
+            <select
+              required
+              value={state[optionNameLowerCase] || ""} 
+              className='w-full p-1 border border-transparent hover:border-gray-400/50 bg-gray-400/15' 
+              onChange={(e) =>{
+                const newState = updateOption(optionNameLowerCase, e.target.value);
+                updateURL(newState);
+              }}
+            >
+              <option value="">{`Select ${option.name}`}</option>
+              {option.values.map(value => {
+                return (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                )
+              })}
+            </select>
           </fieldset>
         )
       })}
