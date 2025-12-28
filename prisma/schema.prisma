@@ -25,7 +25,8 @@ model Product {
   isAvailableForSale  Boolean
   name                String
   description         String
-  imageUrl            String
+  featuredImageURL    String?
+  featuredImageAlt    String?
   productOptionValues ProductOptionValue[]
   collections         Collection[]
   variants            ProductVariant[]
