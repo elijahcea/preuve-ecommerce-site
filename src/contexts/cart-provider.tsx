@@ -44,10 +44,10 @@ function createNewItem(variant: ProductVariant, product: Product): CartItem {
         merchandise: {
             id: variant.id,
             name: product.name,
+            sku: variant.sku,
             price: variant.price,
             isAvailableForSale: variant.isAvailableForSale,
-            imageUrl: variant.imageUrl,
-            imageAlt: variant.imageAlt,
+            image: variant.image,
             href: variant.href,
             selectedOptions: variant.selectedOptions
         }
