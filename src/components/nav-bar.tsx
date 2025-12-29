@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link"
-import SearchBar from "@/src/components/search-bar"
+import SearchModal from "@/src/components/search/search-modal"
 import CartModal from "@/src/components/cart/cart-modal"
 import { Popover, PopoverButton, PopoverPanel, PopoverBackdrop, CloseButton } from "@headlessui/react"
 import { Collection } from "../generated/prisma/client";
@@ -53,8 +53,8 @@ export default function NavBar({ collectionsPromise }: { collectionsPromise: Pro
                     <h1 className="font-semibold text-xl">PREUVE NEW YORK</h1>
                 </Link>              
                 <nav className="place-items-end">
-                    <ul>
-                        <SearchBar />
+                    <ul className="flex align-middle gap-5">
+                        <SearchModal />
                         <CartModal />
                     </ul>
                 </nav>
