@@ -6,6 +6,7 @@ import { CartProvider } from "../contexts/cart-provider";
 import { getCart } from "../dal/cart/queries";
 import { Roboto_Condensed } from "next/font/google";
 import { getAllCollections } from "../dal/collection/queries";
+import SearchProvider from "../contexts/search-provider";
 
 const roboto_condensed = Roboto_Condensed({
     subsets: ["latin"]
@@ -28,9 +29,11 @@ export default async function RootLayout({
     <html className="h-full" lang="en">
       <body className={`${roboto_condensed.className} antialiased h-full flex flex-col`}>
         <CartProvider cartPromise={cartPromise}>
-          <NavBar collectionsPromise={collectionsPromise} />
-          {children}
-          <Footer />
+          <SearchProvider>
+            <NavBar collectionsPromise={collectionsPromise} />
+              {children}
+            <Footer />
+          </SearchProvider>
         </CartProvider>
       </body>
     </html>
