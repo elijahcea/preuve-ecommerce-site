@@ -104,7 +104,7 @@ export async function getCollectionProducts({
     }
 }
 
-export async function getProduct( slug: string ) {
+export async function getProduct(slug: string) {
     try {
         const product = await prisma.product.findUnique({
             where: {
@@ -115,6 +115,56 @@ export async function getProduct( slug: string ) {
         if (!product) return null;
 
         return formatProduct(product);
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function searchProducts(searchInput: string) {
+    try {
+        const results = await prisma.product.findMany({
+            where: {
+                OR: [
+                    {
+                        name: {
+                            contains: searchInput,
+                            mode: "insensitive"
+                        }
+                    },
+                    {
+                        description: {
+                            contains: searchInput,
+                            mode: "insensitive"
+                        }
+                    },
+                    {
+                        collections: {
+                            some: {
+                                name: {
+                                    contains: searchInput,
+                                    mode: "insensitive"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        collections: {
+                            some: {
+                                description: {
+                                    contains: searchInput,
+                                    mode: "insensitive"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            include: includeProductWithOptionsAndVariants
+        })
+
+        if (!results) return null;
+
+        return results.map(product => formatProduct(product)); 
     } catch (e) {
         throw e;
     }
