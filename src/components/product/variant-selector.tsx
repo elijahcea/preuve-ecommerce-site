@@ -39,7 +39,7 @@ export default function VariantSelector({
                 updateURL(newState);
               }}
             >
-              <option value="">{`Select ${option.name}`}</option>
+              <option disabled value="">{`Select ${option.name}`}</option>
               {option.values.map(value => {
                 return (
                   <option key={value} value={value}>
