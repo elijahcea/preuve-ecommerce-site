@@ -9,8 +9,8 @@ import { getAllCollections } from "../dal/collection/queries";
 import SearchProvider from "../contexts/search-provider";
 
 const roboto_condensed = Roboto_Condensed({
-    subsets: ["latin"]
-})
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Preuve New York",
@@ -27,11 +27,13 @@ export default async function RootLayout({
 
   return (
     <html className="h-full" lang="en">
-      <body className={`${roboto_condensed.className} antialiased h-full flex flex-col`}>
+      <body
+        className={`${roboto_condensed.className} antialiased h-full flex flex-col`}
+      >
         <CartProvider cartPromise={cartPromise}>
           <SearchProvider>
             <NavBar collectionsPromise={collectionsPromise} />
-              {children}
+            {children}
             <Footer />
           </SearchProvider>
         </CartProvider>

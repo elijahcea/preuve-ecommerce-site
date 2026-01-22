@@ -1,11 +1,7 @@
 export function CollectionPageSkeleton() {
-    return (
-        <p>Collection loading...</p>
-    )
+  return <p>Collection loading...</p>;
 }
 
 export function ProductDetailSkeleton() {
-    return (
-        <p>Product loading...</p>
-    )
+  return <p>Product loading...</p>;
 }

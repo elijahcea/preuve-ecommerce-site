@@ -6,19 +6,23 @@ import { Product } from "@/src/lib/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
-    const product: Product | null = await getProduct(slug);
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product: Product | null = await getProduct(slug);
 
-    if (!product) {
-      return notFound();
-    }
+  if (!product) {
+    return notFound();
+  }
 
-    return (
-        <ProductProvider>
-            <Suspense fallback={<ProductDetailSkeleton />}>
-                <ProductDetail product={product}/>
-            </Suspense>
-        </ProductProvider>
-    )
+  return (
+    <ProductProvider>
+      <Suspense fallback={<ProductDetailSkeleton />}>
+        <ProductDetail product={product} />
+      </Suspense>
+    </ProductProvider>
+  );
 }

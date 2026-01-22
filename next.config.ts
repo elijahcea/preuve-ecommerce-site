@@ -7,16 +7,16 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.aimeleondore.com",
         port: "",
-        pathname: "/cdn/shop/files/**"
+        pathname: "/cdn/shop/files/**",
       },
       {
         protocol: "https",
         hostname: "cdn.shopify.com",
         port: "",
-        pathname: "/s/files/**"
-      }
-    ]
-  }
-};  
+        pathname: "/s/files/**",
+      },
+    ],
+  },
+};
 
 export default nextConfig;

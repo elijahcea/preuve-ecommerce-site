@@ -32,7 +32,7 @@ export type Product = {
   featuredImage?: Image;
   createdAt: Date;
   updatedAt: Date;
-  
+
   options: string[];
   optionsWithValues: ProductOption[];
   variants: ProductVariant[];
@@ -46,7 +46,7 @@ export type Cart = {
     totalCost: number;
     subtotalCost: number;
     totalTaxAmount: number;
-  }
+  };
 };
 
 export type CartItem = {

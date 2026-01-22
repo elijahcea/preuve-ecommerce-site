@@ -1,3 +1,3 @@
 export default function Terms() {
-    return <div>Terms & Conditions Page.</div>
+  return <div>Terms & Conditions Page.</div>;
 }

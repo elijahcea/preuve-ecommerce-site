@@ -1,28 +1,33 @@
-'use client'
+"use client";
 
-import { Dialog, DialogPanel, DialogTitle, DialogBackdrop } from '@headlessui/react'
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  DialogBackdrop,
+} from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { useCartContext } from "@/src/contexts/cart-provider";
 import { createCartAndSetCookie } from "@/src/actions/cart";
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { ShoppingCartIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
-import Link from 'next/link';
-import Price from '../price';
-import EditItemQuantityBtn from './edit-item-quantity-btn';
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import Link from "next/link";
+import Price from "../price";
+import EditItemQuantityBtn from "./edit-item-quantity-btn";
 
 export default function CartModal() {
-    const { cart } = useCartContext();
-    const [isOpen, setIsOpen] = useState(false);
+  const { cart } = useCartContext();
+  const [isOpen, setIsOpen] = useState(false);
 
-    const locale = "en-US";
-    const currency = "USD";
+  const locale = "en-US";
+  const currency = "USD";
 
-    useEffect(() => {
-      if (!cart) {
-        createCartAndSetCookie();
-      }
-    }, [cart]);
+  useEffect(() => {
+    if (!cart) {
+      createCartAndSetCookie();
+    }
+  }, [cart]);
 
   return (
     <>
@@ -31,7 +36,13 @@ export default function CartModal() {
         className="relative cursor-pointer transition-opacity ease-in-out duration-250 text-foreground hover:opacity-60"
       >
         <ShoppingCartIcon aria-hidden="true" className="size-6" />
-        {!cart?.totalQuantity ? <></> : <div className='absolute bottom-3 left-3 bg-foreground rounded-full h-4 w-4 text-background text-xs'>{cart?.totalQuantity}</div> }
+        {!cart?.totalQuantity ? (
+          <></>
+        ) : (
+          <div className="absolute bottom-3 left-3 bg-foreground rounded-full h-4 w-4 text-background text-xs">
+            {cart?.totalQuantity}
+          </div>
+        )}
       </button>
       <Dialog open={isOpen} onClose={setIsOpen} className="relative z-10">
         <DialogBackdrop
@@ -49,7 +60,9 @@ export default function CartModal() {
                 <div className="flex h-full flex-col overflow-y-auto bg-white shadow-xl">
                   <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                     <div className="flex items-start justify-between">
-                      <DialogTitle className="text-lg font-medium text-gray-900">CART</DialogTitle>
+                      <DialogTitle className="text-lg font-medium text-gray-900">
+                        CART
+                      </DialogTitle>
                       <div className="ml-3 flex h-7 items-center">
                         <button
                           type="button"
@@ -65,48 +78,91 @@ export default function CartModal() {
 
                     <div className="mt-8">
                       <div className="flow-root">
-                        {cart?.items.length === 0 ?
-                            <div className='flex flex-col justify-center items-center gap-1'>
-                                <ShoppingCartIcon aria-hidden="true" className="size-8 text-gray-900" />
-                                <p className='font-bold text-gray-900'>Your cart is empty</p> 
-                            </div>
-                            : 
-                            <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                {cart?.items.map((item) => (
-                                    <li key={item.merchandise.id} className="flex py-6">
-                                        {item.merchandise.image?.url ? (
-                                            <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                <Image alt={item.merchandise.image.altText || item.merchandise.name} src={item.merchandise.image.url} className="size-full object-cover" />
-                                            </div>  
-                                        ) : <></>}
+                        {cart?.items.length === 0 ? (
+                          <div className="flex flex-col justify-center items-center gap-1">
+                            <ShoppingCartIcon
+                              aria-hidden="true"
+                              className="size-8 text-gray-900"
+                            />
+                            <p className="font-bold text-gray-900">
+                              Your cart is empty
+                            </p>
+                          </div>
+                        ) : (
+                          <ul
+                            role="list"
+                            className="-my-6 divide-y divide-gray-200"
+                          >
+                            {cart?.items.map((item) => (
+                              <li
+                                key={item.merchandise.id}
+                                className="flex py-6"
+                              >
+                                {item.merchandise.image?.url ? (
+                                  <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                    <Image
+                                      alt={
+                                        item.merchandise.image.altText ||
+                                        item.merchandise.name
+                                      }
+                                      src={item.merchandise.image.url}
+                                      className="size-full object-cover"
+                                    />
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
 
-                                        <div className="ml-4 flex flex-1 flex-col">
-                                            <div>
-                                              <div className="flex justify-between text-base font-medium text-gray-900">
-                                                  <h3>
-                                                    <Link href={item.merchandise.href} onNavigate={() => setIsOpen(false)}>{item.merchandise.name}</Link>
-                                                  </h3>
-                                                  <div className='flex gap-2.5 text-lg'>
-                                                    <EditItemQuantityBtn item={item} action="minus" />
-                                                    <p className='text-base'>{item.quantity}</p>
-                                                    <EditItemQuantityBtn item={item} action="plus" />
-                                                  </div>
-                                              </div>
-                                              <p className="mt-1 text-sm text-gray-500">
-                                                {item.merchandise.selectedOptions.map(so => so.value).join(" / ")}
-                                              </p>
-                                          </div>
-                                          <div className="flex flex-1 items-end justify-between text-sm">
-                                            <Price locale={locale} currency={currency} amount={item.totalCost} styles={["text-gray-900"]} />
-                                            <div className="flex">
-                                                <EditItemQuantityBtn item={item} action='delete' />
-                                            </div>
-                                          </div>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        }
+                                <div className="ml-4 flex flex-1 flex-col">
+                                  <div>
+                                    <div className="flex justify-between text-base font-medium text-gray-900">
+                                      <h3>
+                                        <Link
+                                          href={item.merchandise.href}
+                                          onNavigate={() => setIsOpen(false)}
+                                        >
+                                          {item.merchandise.name}
+                                        </Link>
+                                      </h3>
+                                      <div className="flex gap-2.5 text-lg">
+                                        <EditItemQuantityBtn
+                                          item={item}
+                                          action="minus"
+                                        />
+                                        <p className="text-base">
+                                          {item.quantity}
+                                        </p>
+                                        <EditItemQuantityBtn
+                                          item={item}
+                                          action="plus"
+                                        />
+                                      </div>
+                                    </div>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                      {item.merchandise.selectedOptions
+                                        .map((so) => so.value)
+                                        .join(" / ")}
+                                    </p>
+                                  </div>
+                                  <div className="flex flex-1 items-end justify-between text-sm">
+                                    <Price
+                                      locale={locale}
+                                      currency={currency}
+                                      amount={item.totalCost}
+                                      styles={["text-gray-900"]}
+                                    />
+                                    <div className="flex">
+                                      <EditItemQuantityBtn
+                                        item={item}
+                                        action="delete"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -114,9 +170,15 @@ export default function CartModal() {
                   <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                     <div className="flex justify-between text-base font-medium text-gray-900">
                       <p>Subtotal</p>
-                      <Price locale={locale} currency={currency} amount={cart?.cost.totalCost || 0} />
+                      <Price
+                        locale={locale}
+                        currency={currency}
+                        amount={cart?.cost.totalCost || 0}
+                      />
                     </div>
-                    <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                    <p className="mt-0.5 text-sm text-gray-500">
+                      Shipping and taxes calculated at checkout.
+                    </p>
                     <div className="mt-6">
                       <a
                         href="#"
@@ -145,5 +207,5 @@ export default function CartModal() {
         </div>
       </Dialog>
     </>
-  )
+  );
 }

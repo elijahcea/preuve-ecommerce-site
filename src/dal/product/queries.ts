@@ -5,167 +5,169 @@ import { Prisma } from "@/src/generated/prisma/client";
 import { formatProduct } from "@/src/dal/helpers";
 
 const includeProductWithOptionsAndVariants = {
-    productOptionValues: {
+  productOptionValues: {
+    include: {
+      optionValue: {
         include: {
-            optionValue: {
-                include: {
-                    option: true
-                }
-            }
-        }
+          option: true,
+        },
+      },
     },
-    variants: {
+  },
+  variants: {
+    include: {
+      selectedOptions: {
         include: {
-            selectedOptions: {
-                include: {
-                    optionValue: {
-                        include: {
-                            option: true
-                        }
-                    }
-                }
-            }
-        }
-    }
+          optionValue: {
+            include: {
+              option: true,
+            },
+          },
+        },
+      },
+    },
+  },
 } satisfies Prisma.ProductInclude;
 
 export type ProductWithOptionsAndVariants = Prisma.ProductGetPayload<{
-    include: typeof includeProductWithOptionsAndVariants
+  include: typeof includeProductWithOptionsAndVariants;
 }>;
 
 export async function getCollectionProducts({
-    collectionSlug,
-    pageSize = 20,
-    cursor
+  collectionSlug,
+  pageSize = 20,
+  cursor,
 }: {
-    collectionSlug: string,
-    pageSize?: number,
-    cursor?: string
+  collectionSlug: string;
+  pageSize?: number;
+  cursor?: string;
 }) {
-    if (pageSize < 1 || pageSize > 100) {
-        throw new Error("pageSize must be between 1 and 100");
-    }
+  if (pageSize < 1 || pageSize > 100) {
+    throw new Error("pageSize must be between 1 and 100");
+  }
 
-    try {
-        const collection = await prisma.collection.findUnique({
-            where: {
-                slug: collectionSlug
-            }
-        })
-        if (!collection) return null;
+  try {
+    const collection = await prisma.collection.findUnique({
+      where: {
+        slug: collectionSlug,
+      },
+    });
+    if (!collection) return null;
 
-        const products = await prisma.product.findMany({
-            take: pageSize,
-            skip: cursor ? 1 : undefined,
-            cursor: cursor ? {
-                id: cursor
-            } : undefined,
-            where: {
-                AND: [
-                    {
-                        collections: {
-                            some: {
-                                slug: collectionSlug
-                            }
-                        }                    
-                    },
-                    {
-                        isAvailableForSale: {
-                            equals: true
-                        }
-                    }
-                ]
+    const products = await prisma.product.findMany({
+      take: pageSize,
+      skip: cursor ? 1 : undefined,
+      cursor: cursor
+        ? {
+            id: cursor,
+          }
+        : undefined,
+      where: {
+        AND: [
+          {
+            collections: {
+              some: {
+                slug: collectionSlug,
+              },
             },
-            orderBy: [
-                {
-                    createdAt: "desc",
-                },
-                {
-                    id: "desc"
-                }
-            ],
-            include: includeProductWithOptionsAndVariants
-        })
-
-        const formattedProducts = products.map(product => formatProduct(product));
-
-        const nextCursor = products[products.length - 1].id
-
-        return {
-            collection: {
-                title: collection.name,
-                description: collection.description
+          },
+          {
+            isAvailableForSale: {
+              equals: true,
             },
-            formattedProducts,
-            nextCursor
-        };
-    } catch (e) {
-        throw e;
-    }
+          },
+        ],
+      },
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+        {
+          id: "desc",
+        },
+      ],
+      include: includeProductWithOptionsAndVariants,
+    });
+
+    const formattedProducts = products.map((product) => formatProduct(product));
+
+    const nextCursor = products[products.length - 1].id;
+
+    return {
+      collection: {
+        title: collection.name,
+        description: collection.description,
+      },
+      formattedProducts,
+      nextCursor,
+    };
+  } catch (e) {
+    throw e;
+  }
 }
 
 export async function getProduct(slug: string) {
-    try {
-        const product = await prisma.product.findUnique({
-            where: {
-                slug: slug
-            },     
-            include: includeProductWithOptionsAndVariants
-        })
-        if (!product) return null;
+  try {
+    const product = await prisma.product.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: includeProductWithOptionsAndVariants,
+    });
+    if (!product) return null;
 
-        return formatProduct(product);
-    } catch (e) {
-        throw e;
-    }
+    return formatProduct(product);
+  } catch (e) {
+    throw e;
+  }
 }
 
 export async function searchProducts(searchInput: string) {
-    try {
-        const results = await prisma.product.findMany({
-            where: {
-                OR: [
-                    {
-                        name: {
-                            contains: searchInput,
-                            mode: "insensitive"
-                        }
-                    },
-                    {
-                        description: {
-                            contains: searchInput,
-                            mode: "insensitive"
-                        }
-                    },
-                    {
-                        collections: {
-                            some: {
-                                name: {
-                                    contains: searchInput,
-                                    mode: "insensitive"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        collections: {
-                            some: {
-                                description: {
-                                    contains: searchInput,
-                                    mode: "insensitive"
-                                }
-                            }
-                        }
-                    }
-                ]
+  try {
+    const results = await prisma.product.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: searchInput,
+              mode: "insensitive",
             },
-            include: includeProductWithOptionsAndVariants
-        })
+          },
+          {
+            description: {
+              contains: searchInput,
+              mode: "insensitive",
+            },
+          },
+          {
+            collections: {
+              some: {
+                name: {
+                  contains: searchInput,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            collections: {
+              some: {
+                description: {
+                  contains: searchInput,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: includeProductWithOptionsAndVariants,
+    });
 
-        if (!results) return null;
+    if (!results) return null;
 
-        return results.map(product => formatProduct(product)); 
-    } catch (e) {
-        throw e;
-    }
+    return results.map((product) => formatProduct(product));
+  } catch (e) {
+    throw e;
+  }
 }

@@ -1,9 +1,7 @@
 export default function AccountLayout({
-    children,
-  }: Readonly<{
-    children: React.ReactNode;
+  children,
+}: Readonly<{
+  children: React.ReactNode;
 }>) {
-    return (
-        <>{children}</>
-    )
+  return <>{children}</>;
 }
