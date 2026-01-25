@@ -13,7 +13,6 @@ export type ProductVariant = {
   sku: string;
   name: string;
   price: number;
-  isAvailableForSale: boolean;
   image?: Image;
   href: string;
   selectedOptions: SelectedOption[];
@@ -21,6 +20,7 @@ export type ProductVariant = {
 
 export type Product = {
   id: string;
+  status: boolean;
   slug: string;
   name: string;
   description: string;
@@ -28,11 +28,11 @@ export type Product = {
     minVariantPrice: number;
     maxVariantPrice: number;
   };
-  isAvailableForSale: boolean;
   featuredImage?: Image;
   createdAt: Date;
   updatedAt: Date;
 
+  collections: Collection[];
   options: string[];
   optionsWithValues: ProductOption[];
   variants: ProductVariant[];
@@ -61,4 +61,10 @@ export type Image = {
   altText?: string | null;
   width?: number;
   height?: number;
+};
+
+export type Collection = {
+  id: string;
+  name: string;
+  description: string | null;
 };

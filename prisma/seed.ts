@@ -134,11 +134,11 @@ async function main() {
   const tshirt = await prisma.product.create({
     data: {
       name: "Classic T-Shirt",
+      status: true,
       slug: "classic-t-shirt",
       description: "A comfortable cotton t-shirt perfect for everyday wear",
       featuredImageURL:
         "https://www.aimeleondore.com/cdn/shop/files/FW25CT080_BOTANICALGARDEN_3_1600x.jpg?v=1764088217",
-      isAvailableForSale: true,
       collections: {
         connect: [{ id: menCollection.id }, { id: shopAllCollection.id }],
       },
@@ -178,7 +178,6 @@ async function main() {
     await prisma.productVariant.create({
       data: {
         sku: `TSHIRT-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
-        isAvailableForSale: true,
         productId: tshirt.id,
         price: 3000,
         stock: variant.stock,
@@ -202,11 +201,11 @@ async function main() {
   const sweater = await prisma.product.create({
     data: {
       name: "Wool Sweater",
+      status: true,
       slug: "wool-sweater",
       description: "Warm and cozy wool sweater for cold days",
       featuredImageURL:
         "https://www.aimeleondore.com/cdn/shop/files/KS022_WINERY_1_600x.jpg?v=1755640460",
-      isAvailableForSale: true,
       collections: {
         connect: [
           { id: menCollection.id },
@@ -242,7 +241,6 @@ async function main() {
     await prisma.productVariant.create({
       data: {
         sku: `SWEATER-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
-        isAvailableForSale: true,
         productId: sweater.id,
         price: 8000,
         stock: variant.stock,
@@ -266,11 +264,11 @@ async function main() {
   const socks = await prisma.product.create({
     data: {
       name: "Cotton Socks",
+      status: true,
       slug: "cotton-socks",
       description: "Comfortable cotton socks, sold in pairs",
       featuredImageURL:
         "https://www.aimeleondore.com/cdn/shop/files/4x5_FW24D1_ACC_FW24AS058_KALAMATA_4544_1600x.jpg?v=1724172011",
-      isAvailableForSale: true,
       collections: {
         connect: [{ id: menCollection.id }, { id: shopAllCollection.id }],
       },
@@ -296,7 +294,6 @@ async function main() {
     await prisma.productVariant.create({
       data: {
         sku: `SOCKS-${variant.color.slug.toUpperCase()}`,
-        isAvailableForSale: true,
         productId: socks.id,
         price: 1300,
         stock: variant.stock,
@@ -317,11 +314,11 @@ async function main() {
   const mug = await prisma.product.create({
     data: {
       name: "Scarf",
+      status: true,
       slug: "scarf",
       description: "Exclusive Scarf for the holiday season",
       featuredImageURL:
         "https://www.aimeleondore.com/cdn/shop/files/FW25AS020_PorscheScarf_TangoRed_22_600x.jpg?v=1760551547",
-      isAvailableForSale: true,
       collections: {
         connect: [{ id: lifestyleCollection.id }, { id: shopAllCollection.id }],
       },
@@ -333,7 +330,6 @@ async function main() {
   await prisma.productVariant.create({
     data: {
       sku: `MUG`,
-      isAvailableForSale: true,
       productId: mug.id,
       price: 8000,
       stock: 10,

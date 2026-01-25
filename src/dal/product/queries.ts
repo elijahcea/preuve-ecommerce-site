@@ -3,8 +3,9 @@ import "server-only";
 import prisma from "@/src/lib/prisma";
 import { Prisma } from "@/src/generated/prisma/client";
 import { formatProduct } from "@/src/dal/helpers";
+import { Product } from "@/src/lib/types";
 
-const includeProductWithOptionsAndVariants = {
+const includeProductFull = {
   productOptionValues: {
     include: {
       optionValue: {
@@ -27,11 +28,41 @@ const includeProductWithOptionsAndVariants = {
       },
     },
   },
+  collections: true,
 } satisfies Prisma.ProductInclude;
 
 export type ProductWithOptionsAndVariants = Prisma.ProductGetPayload<{
-  include: typeof includeProductWithOptionsAndVariants;
+  include: typeof includeProductFull;
 }>;
+
+export async function getAllProducts(): Promise<Product[] | null> {
+  try {
+    const products = await prisma.product.findMany({
+      include: includeProductFull,
+    });
+    if (!products) return null;
+
+    return products.map((product) => formatProduct(product));
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function getProduct(slug: string): Promise<Product | null> {
+  try {
+    const product = await prisma.product.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: includeProductFull,
+    });
+    if (!product) return null;
+
+    return formatProduct(product);
+  } catch (e) {
+    throw e;
+  }
+}
 
 export async function getCollectionProducts({
   collectionSlug,
@@ -72,7 +103,7 @@ export async function getCollectionProducts({
             },
           },
           {
-            isAvailableForSale: {
+            status: {
               equals: true,
             },
           },
@@ -86,7 +117,7 @@ export async function getCollectionProducts({
           id: "desc",
         },
       ],
-      include: includeProductWithOptionsAndVariants,
+      include: includeProductFull,
     });
 
     const formattedProducts = products.map((product) => formatProduct(product));
@@ -101,22 +132,6 @@ export async function getCollectionProducts({
       formattedProducts,
       nextCursor,
     };
-  } catch (e) {
-    throw e;
-  }
-}
-
-export async function getProduct(slug: string) {
-  try {
-    const product = await prisma.product.findUnique({
-      where: {
-        slug: slug,
-      },
-      include: includeProductWithOptionsAndVariants,
-    });
-    if (!product) return null;
-
-    return formatProduct(product);
   } catch (e) {
     throw e;
   }
@@ -161,7 +176,7 @@ export async function searchProducts(searchInput: string) {
           },
         ],
       },
-      include: includeProductWithOptionsAndVariants,
+      include: includeProductFull,
     });
 
     if (!results) return null;
