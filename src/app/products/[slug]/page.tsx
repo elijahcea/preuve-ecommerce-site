@@ -12,7 +12,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product: Product | null = await getProduct(slug);
+  const product = await getProduct(slug);
 
   if (!product) {
     return notFound();
