@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SelectedOption, ProductVariant } from "@/src/lib/types";
-import { ProductWithOptionsAndVariants } from "./product/queries";
+import { ProductVariantRaw, ProductWithAllRelations } from "./product/queries";
 
 export function createProductHref(
   productSlug: string,
@@ -21,7 +21,7 @@ export function calculatePriceInDollars(price: number): number {
   return price / 100;
 }
 
-export function formatProduct(product: ProductWithOptionsAndVariants) {
+export function formatProduct(product: ProductWithAllRelations) {
   const optionsMap = new Map();
 
   product.productOptionValues.forEach((pov) => {
@@ -71,7 +71,7 @@ export function formatProduct(product: ProductWithOptionsAndVariants) {
     slug: product.slug,
     status: product.status,
     name: product.name,
-    priceRange: calculateProductPriceRange(transformedVariants),
+    priceRange: calculateProductPriceRange(product.variants),
     description: product.description,
     featuredImage: {
       url: product.featuredImageURL,
@@ -86,7 +86,7 @@ export function formatProduct(product: ProductWithOptionsAndVariants) {
   };
 }
 
-function calculateProductPriceRange(variants: ProductVariant[]) {
+export function calculateProductPriceRange(variants: ProductVariantRaw[]) {
   const prices = variants.map((variant) => variant.price);
 
   return {
