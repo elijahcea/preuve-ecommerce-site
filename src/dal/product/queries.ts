@@ -3,9 +3,10 @@ import "server-only";
 import prisma from "@/src/lib/prisma";
 import { Prisma } from "@/src/generated/prisma/client";
 import { formatProduct } from "@/src/dal/helpers";
-import { Product } from "@/src/lib/types";
+import { Product, ProductPreview } from "@/src/lib/types";
+import { calculateProductPriceRange } from "@/src/dal/helpers";
 
-const includeProductFull = {
+const includeProductAllRelations = {
   productOptionValues: {
     include: {
       optionValue: {
@@ -31,30 +32,49 @@ const includeProductFull = {
   collections: true,
 } satisfies Prisma.ProductInclude;
 
-export type ProductWithOptionsAndVariants = Prisma.ProductGetPayload<{
-  include: typeof includeProductFull;
+export type ProductWithAllRelations = Prisma.ProductGetPayload<{
+  include: typeof includeProductAllRelations;
 }>;
 
-export async function getAllProducts(): Promise<Product[] | null> {
+export type ProductVariantRaw = Prisma.ProductVariantGetPayload<null>;
+
+export async function getAllProducts(): Promise<ProductPreview[] | null> {
   try {
     const products = await prisma.product.findMany({
-      include: includeProductFull,
+      include: {
+        variants: true,
+      },
     });
     if (!products) return null;
 
-    return products.map((product) => formatProduct(product));
+    return products.map((product) => {
+      return {
+        id: product.id,
+        slug: product.slug,
+        status: product.status,
+        name: product.name,
+        priceRange: calculateProductPriceRange(product.variants),
+        description: product.description,
+        featuredImage: {
+          url: product.featuredImageURL,
+          alt: product.featuredImageAlt,
+        },
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      };
+    });
   } catch (e) {
     throw e;
   }
 }
 
-export async function getProduct(slug: string): Promise<Product | null> {
+export async function getProduct(id: string): Promise<Product | null> {
   try {
     const product = await prisma.product.findUnique({
       where: {
-        slug: slug,
+        id: id,
       },
-      include: includeProductFull,
+      include: includeProductAllRelations,
     });
     if (!product) return null;
 
@@ -117,7 +137,7 @@ export async function getCollectionProducts({
           id: "desc",
         },
       ],
-      include: includeProductFull,
+      include: includeProductAllRelations,
     });
 
     const formattedProducts = products.map((product) => formatProduct(product));
@@ -176,7 +196,7 @@ export async function searchProducts(searchInput: string) {
           },
         ],
       },
-      include: includeProductFull,
+      include: includeProductAllRelations,
     });
 
     if (!results) return null;
