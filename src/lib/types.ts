@@ -32,7 +32,7 @@ export type Product = {
   createdAt: Date;
   updatedAt: Date;
 
-  collections: Collection[];
+  collections: CollectionPreview[];
   options: string[];
   optionsWithValues: ProductOption[];
   variants: ProductVariant[];
@@ -63,8 +63,16 @@ export type Image = {
   height?: number;
 };
 
+export type ProductPreview = Omit<
+  Product,
+  "collections" | "options" | "optionsWithValues" | "variants" | "priceRange"
+>;
+
 export type Collection = {
   id: string;
   name: string;
   description: string | null;
+  products: ProductPreview[];
 };
+
+export type CollectionPreview = Omit<Collection, "products">;
