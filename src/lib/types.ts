@@ -1,20 +1,34 @@
 export type ProductOption = {
+  id: string;
+  position: number;
   name: string;
-  values: string[];
+  optionValues: ProductOptionValue[];
+};
+
+export type ProductOptionValue = {
+  id: string;
+  position: number;
+  name: string;
+  optionId: string;
 };
 
 export type SelectedOption = {
   name: string;
   value: string;
+  optionValue: ProductOptionValue;
 };
 
 export type ProductVariant = {
   id: string;
   sku: string;
-  name: string;
+  productName: string;
   price: number;
+  inventoryQuantity: number;
   image?: Image;
   href: string;
+  createdAt: Date;
+  updatedAt: Date;
+
   selectedOptions: SelectedOption[];
 };
 
@@ -33,8 +47,7 @@ export type Product = {
   updatedAt: Date;
 
   collections: CollectionPreview[];
-  options: string[];
-  optionsWithValues: ProductOption[];
+  options: ProductOption[];
   variants: ProductVariant[];
 };
 
@@ -53,7 +66,17 @@ export type CartItem = {
   id: string | undefined;
   totalCost: number;
   quantity: number;
-  merchandise: ProductVariant;
+  merchandise: Merchandise;
+};
+
+export type Merchandise = {
+  variantId: string;
+  sku: string;
+  productName: string;
+  price: number;
+  image?: Image;
+  href: string;
+  selectedOptions: SelectedOption[];
 };
 
 export type Image = {
@@ -65,13 +88,14 @@ export type Image = {
 
 export type ProductPreview = Omit<
   Product,
-  "collections" | "options" | "optionsWithValues" | "variants" | "priceRange"
+  "collections" | "options" | "variants" | "priceRange"
 >;
 
 export type Collection = {
   id: string;
+  slug: string;
   name: string;
-  description: string | null;
+  description: string;
   products: ProductPreview[];
 };
 
