@@ -32,7 +32,7 @@ export default function ProductProvider({
     return params;
   };
 
-  const [productState, setProductState] = useState(getInitialState());
+  const [productState, setProductState] = useState(getInitialState);
 
   const updateOption = (name: string, value: string) => {
     const updatedOption = { [name]: value };
