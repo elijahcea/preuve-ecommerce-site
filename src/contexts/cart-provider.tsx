@@ -42,12 +42,11 @@ function createNewItem(variant: ProductVariant, product: Product): CartItem {
     totalCost: variant.price,
     quantity: 1,
     merchandise: {
-      id: variant.id,
-      name: product.name,
+      variantId: variant.id,
+      productName: product.name,
       sku: variant.sku,
       price: variant.price,
-      isAvailableForSale: variant.isAvailableForSale,
-      image: variant.image,
+      image: variant.image ?? product.featuredImage,
       href: variant.href,
       selectedOptions: variant.selectedOptions,
     },
@@ -66,10 +65,9 @@ function updateCartItem(item: CartItem, action: ItemAction): CartItem | null {
   if (newQuantity <= 0) return null;
 
   return {
-    id: item.id,
+    ...item,
     totalCost: calculateItemCost(item.merchandise.price, newQuantity),
     quantity: newQuantity,
-    merchandise: item.merchandise,
   };
 }
 
@@ -99,7 +97,7 @@ function updateCart(cartState: Cart | undefined, cartAction: CartAction): Cart {
     case "ADD_TO_CART": {
       const { variant, product } = cartAction.payload;
       const existingItem = cart.items.find(
-        (item) => item.merchandise.id === variant.id,
+        (item) => item.merchandise.variantId === variant.id,
       );
 
       if (!existingItem) {
@@ -113,7 +111,7 @@ function updateCart(cartState: Cart | undefined, cartAction: CartAction): Cart {
       }
 
       const updatedItems = cart.items.map((item) =>
-        item.merchandise.id === existingItem.merchandise.id
+        item.merchandise.variantId === existingItem.merchandise.variantId
           ? updateCartItem(existingItem, "plus")
           : item,
       ) as CartItem[];
@@ -127,7 +125,7 @@ function updateCart(cartState: Cart | undefined, cartAction: CartAction): Cart {
       const { merchandiseId, action } = cartAction.payload;
       const newItems = cart.items
         .map((item) =>
-          item.merchandise.id === merchandiseId
+          item.merchandise.variantId === merchandiseId
             ? updateCartItem(item, action)
             : item,
         )

@@ -14,7 +14,7 @@ export default function ProductDetail({ product }: { product: Product }) {
     return product.variants.find((variant) => {
       return variant.selectedOptions.every((selectedOption) => {
         const stateValue = state[selectedOption.name.toLowerCase()];
-        return stateValue === selectedOption.value;
+        return stateValue === selectedOption.value.toLowerCase();
       });
     });
   };
@@ -52,7 +52,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           )}
         </div>
         <VariantSelector
-          options={product.optionsWithValues}
+          options={product.options}
           variants={product.variants}
         />
         <AddToCartBtn variant={selectedVariant} product={product} />

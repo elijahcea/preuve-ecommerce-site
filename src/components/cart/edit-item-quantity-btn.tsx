@@ -22,7 +22,7 @@ export default function EditItemQuantityBtn({
     <form
       action={async () => {
         await updateItem();
-        updateCartItem(item.merchandise.id, action);
+        updateCartItem(item.merchandise.variantId, action);
       }}
     >
       <button

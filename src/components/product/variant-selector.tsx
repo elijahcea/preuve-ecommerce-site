@@ -26,7 +26,6 @@ export default function VariantSelector({
     <div className="grid grid-cols-2 gap-3">
       {options.map((option) => {
         const optionNameLowerCase = option.name.toLowerCase();
-
         return (
           <fieldset key={option.name}>
             <legend>{option.name}</legend>
@@ -42,11 +41,16 @@ export default function VariantSelector({
                 updateURL(newState);
               }}
             >
-              <option disabled value="">{`Select ${option.name}`}</option>
-              {option.values.map((value) => {
+              <option disabled value="">
+                {`Select ${optionNameLowerCase}`}
+              </option>
+              {option.optionValues.map((optionValue) => {
                 return (
-                  <option key={value} value={value}>
-                    {value}
+                  <option
+                    key={optionValue.id}
+                    value={optionValue.name.toLowerCase()}
+                  >
+                    {optionValue.name}
                   </option>
                 );
               })}

@@ -49,7 +49,7 @@ export async function updateItemAction(
 
   try {
     if (action === "delete") {
-      await removeCartItem(cartId, item.merchandise.id);
+      await removeCartItem(cartId, item.merchandise.variantId);
       return;
     }
 
@@ -57,11 +57,11 @@ export async function updateItemAction(
       action === "plus" ? item.quantity + 1 : item.quantity - 1;
 
     if (newQuantity <= 0) {
-      await removeCartItem(cartId, item.merchandise.id);
+      await removeCartItem(cartId, item.merchandise.variantId);
       return;
     }
 
-    await updateCartItem(cartId, item.merchandise.id, action);
+    await updateCartItem(cartId, item.merchandise.variantId, action);
   } catch (e) {
     return `Error updating cart: ${e}`;
   }

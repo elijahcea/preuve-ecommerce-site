@@ -12,7 +12,6 @@ import { createCartAndSetCookie } from "@/src/actions/cart";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import Link from "next/link";
 import Price from "../price";
 import EditItemQuantityBtn from "./edit-item-quantity-btn";
 
@@ -95,18 +94,20 @@ export default function CartModal() {
                           >
                             {cart?.items.map((item) => (
                               <li
-                                key={item.merchandise.id}
+                                key={item.merchandise.variantId}
                                 className="flex py-6"
                               >
                                 {item.merchandise.image?.url ? (
                                   <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <Image
                                       alt={
-                                        item.merchandise.image.altText ||
-                                        item.merchandise.name
+                                        item.merchandise.image.altText ??
+                                        item.merchandise.productName
                                       }
                                       src={item.merchandise.image.url}
-                                      className="size-full object-cover"
+                                      height={750}
+                                      width={600}
+                                      style={{ width: "100%", height: "auto" }}
                                     />
                                   </div>
                                 ) : (
@@ -117,12 +118,14 @@ export default function CartModal() {
                                   <div>
                                     <div className="flex justify-between text-base font-medium text-gray-900">
                                       <h3>
-                                        <Link
+                                        <a
                                           href={item.merchandise.href}
-                                          onNavigate={() => setIsOpen(false)}
+                                          onClick={() => {
+                                            setIsOpen(false);
+                                          }}
                                         >
-                                          {item.merchandise.name}
-                                        </Link>
+                                          {item.merchandise.productName}
+                                        </a>
                                       </h3>
                                       <div className="flex gap-2.5 text-lg">
                                         <EditItemQuantityBtn
@@ -173,7 +176,7 @@ export default function CartModal() {
                       <Price
                         locale={locale}
                         currency={currency}
-                        amount={cart?.cost.totalCost || 0}
+                        amount={cart?.cost.totalCost ?? 0}
                       />
                     </div>
                     <p className="mt-0.5 text-sm text-gray-500">

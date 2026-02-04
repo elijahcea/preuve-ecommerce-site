@@ -8,7 +8,7 @@ export async function GET(
   try {
     const id = (await params).id;
 
-    const product = await getProduct(id);
+    const product = await getProduct({ id });
 
     if (product === null)
       return new NextResponse(JSON.stringify("Product not found"), {

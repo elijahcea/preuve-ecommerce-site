@@ -10,13 +10,13 @@ import {
   PopoverBackdrop,
   CloseButton,
 } from "@headlessui/react";
-import { Collection } from "../generated/prisma/client";
 import { use } from "react";
+import { CollectionPreview } from "../lib/types";
 
 export default function NavBar({
   collectionsPromise,
 }: {
-  collectionsPromise: Promise<Collection[] | undefined>;
+  collectionsPromise: Promise<CollectionPreview[] | null>;
 }) {
   const collections = use(collectionsPromise);
   return (

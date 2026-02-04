@@ -30,12 +30,12 @@ export default function AddToCartBtn({
       }}
     >
       <button
-        aria-disabled={!variant?.isAvailableForSale || isPending}
-        disabled={!variant?.isAvailableForSale || isPending}
+        aria-disabled={!variant?.inventoryQuantity || isPending}
+        disabled={!variant?.inventoryQuantity || isPending}
         className={`
                     w-full px-6 py-3 rounded-xs font-semibold transition-opacity ease-in-out duration-250 text-white bg-foreground
                     ${
-                      !variant?.isAvailableForSale || isPending
+                      !variant?.inventoryQuantity || isPending
                         ? "cursor-not-allowed opacity-50"
                         : "cursor-pointer hover:opacity-75"
                     }
@@ -46,7 +46,7 @@ export default function AddToCartBtn({
           <ShoppingBagIcon aria-hidden="true" className="size-5" />
           {!variant ? (
             "SELECT OPTIONS"
-          ) : variant.isAvailableForSale ? (
+          ) : variant.inventoryQuantity ? (
             isPending ? (
               <LoadingSpinner />
             ) : (
