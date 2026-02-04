@@ -20,7 +20,7 @@ export default function SearchProvider({
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(
-    searchParams.get("q")?.toString(),
+    searchParams.get("q")?.toString() ?? "",
   );
 
   const context: SearchContextType = {
