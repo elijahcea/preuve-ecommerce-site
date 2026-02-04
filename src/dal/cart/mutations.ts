@@ -1,7 +1,6 @@
 import "server-only";
 
 import prisma from "@/src/lib/prisma";
-import { ProductVariant } from "@/src/lib/types";
 
 export async function createCart() {
   const cart = await prisma.cart.create({ data: {} });

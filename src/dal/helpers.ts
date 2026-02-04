@@ -1,6 +1,11 @@
 import "server-only";
 
-import { SelectedOption, ProductVariant } from "@/src/lib/types";
+import {
+  SelectedOption,
+  ProductVariant,
+  Product,
+  ProductOption,
+} from "@/src/lib/types";
 import { ProductVariantRaw, ProductWithAllRelations } from "./product/queries";
 
 export function createProductHref(
@@ -9,7 +14,7 @@ export function createProductHref(
 ) {
   const searchParams = new URLSearchParams();
   for (const so of selectedOptions) {
-    searchParams.set(so.name, so.value);
+    searchParams.set(so.name.toLowerCase(), so.value.toLowerCase());
   }
   const queryString =
     selectedOptions.length === 0 ? "" : "?" + searchParams.toString();
@@ -21,27 +26,36 @@ export function calculatePriceInDollars(price: number): number {
   return price / 100;
 }
 
-export function formatProduct(product: ProductWithAllRelations) {
-  const optionsMap = new Map();
-
-  product.productOptionValues.forEach((pov) => {
-    const opt = pov.optionValue.option;
-    if (!optionsMap.has(opt.name)) {
-      optionsMap.set(opt.name, {
-        name: opt.name,
-        values: [],
-      });
-    }
-    optionsMap.get(opt.name).values.push(pov.optionValue.name);
-  });
+export function formatProduct(product: ProductWithAllRelations): Product {
+  const options: ProductOption[] = product.productOptions.map(
+    (productOption) => {
+      return {
+        id: productOption.id,
+        position: productOption.position,
+        name: productOption.name,
+        optionValues: productOption.optionValues.map((optionValue) => ({
+          id: optionValue.id,
+          position: optionValue.position,
+          name: optionValue.name,
+          optionId: optionValue.productOptionId,
+        })),
+      };
+    },
+  );
 
   // Transform variants
   const transformedVariants: ProductVariant[] = product.variants.map(
     (variant) => {
-      const selectedOptions: SelectedOption[] = variant.selectedOptions.map(
-        (so) => ({
-          name: so.optionValue.option.name,
-          value: so.optionValue.name,
+      const selectedOptions: SelectedOption[] = variant.optionValues.map(
+        (optionValue) => ({
+          name: optionValue.productOption.name,
+          value: optionValue.name,
+          optionValue: {
+            id: optionValue.id,
+            position: optionValue.position,
+            name: optionValue.name,
+            optionId: optionValue.productOptionId,
+          },
         }),
       );
 
@@ -56,12 +70,15 @@ export function formatProduct(product: ProductWithAllRelations) {
 
       return {
         id: variant.id,
-        name: product.name,
         sku: variant.sku,
+        productName: product.name,
         price: calculatePriceInDollars(variant.price),
-        href: createProductHref(product.slug, selectedOptions),
-        selectedOptions,
+        inventoryQuantity: variant.inventoryQuantity,
         ...image,
+        href: createProductHref(product.slug, selectedOptions),
+        createdAt: variant.createdAt,
+        updatedAt: variant.updatedAt,
+        selectedOptions,
       };
     },
   );
@@ -75,19 +92,20 @@ export function formatProduct(product: ProductWithAllRelations) {
     description: product.description,
     featuredImage: {
       url: product.featuredImageURL,
-      alt: product.featuredImageAlt,
+      altText: product.featuredImageAlt,
     },
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
     collections: product.collections,
-    options: Array.from(optionsMap.keys()),
-    optionsWithValues: Array.from(optionsMap.values()),
+    options: options,
     variants: transformedVariants,
   };
 }
 
 export function calculateProductPriceRange(variants: ProductVariantRaw[]) {
-  const prices = variants.map((variant) => variant.price);
+  const prices = variants.map((variant) =>
+    calculatePriceInDollars(variant.price),
+  );
 
   return {
     minVariantPrice: Math.min(...prices),

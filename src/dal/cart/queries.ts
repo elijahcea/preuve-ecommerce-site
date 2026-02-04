@@ -5,7 +5,7 @@ import { Prisma } from "@/src/generated/prisma/client";
 import { Cart, CartItem, SelectedOption } from "@/src/lib/types";
 import { cookies } from "next/headers";
 import { calculateCartTotals, calculateItemCost } from "./helpers";
-import { createProductHref } from "@/src/dal/helpers";
+import { calculatePriceInDollars, createProductHref } from "@/src/dal/helpers";
 
 const selectCartWithItems = {
   id: true,
@@ -14,29 +14,18 @@ const selectCartWithItems = {
       id: true,
       quantity: true,
       productVariant: {
-        select: {
-          id: true,
-          sku: true,
-          price: true,
-          isAvailableForSale: true,
-          imageUrl: true,
-          imageAlt: true,
+        include: {
           product: {
             select: {
               name: true,
               slug: true,
             },
           },
-          selectedOptions: {
-            select: {
-              optionValue: {
+          optionValues: {
+            include: {
+              productOption: {
                 select: {
                   name: true,
-                  option: {
-                    select: {
-                      name: true,
-                    },
-                  },
                 },
               },
             },
@@ -63,24 +52,30 @@ export async function getCart(): Promise<Cart | undefined> {
     if (!res) return undefined;
 
     const cartItems: CartItem[] = res.items.map((item) => {
+      const price = calculatePriceInDollars(item.productVariant.price);
       const selectedOptions: SelectedOption[] =
-        item.productVariant.selectedOptions.map((so) => {
+        item.productVariant.optionValues.map((optionValue) => {
           return {
-            name: so.optionValue.option.name,
-            value: so.optionValue.name,
+            name: optionValue.productOption.name,
+            value: optionValue.name,
+            optionValue: {
+              id: optionValue.name,
+              position: optionValue.position,
+              name: optionValue.name,
+              optionId: optionValue.productOptionId,
+            },
           };
         });
 
       return {
         id: item.id,
-        totalCost: calculateItemCost(item.productVariant.price, item.quantity),
+        totalCost: calculateItemCost(price, item.quantity),
         quantity: item.quantity,
         merchandise: {
-          id: item.productVariant.id,
-          name: item.productVariant.product.name,
+          variantId: item.productVariant.id,
+          productName: item.productVariant.product.name,
           sku: item.productVariant.sku,
-          isAvailableForSale: item.productVariant.isAvailableForSale,
-          price: item.productVariant.price,
+          price: price,
           image: {
             url: item.productVariant.imageUrl,
             altText: item.productVariant.imageAlt,

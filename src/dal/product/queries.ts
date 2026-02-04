@@ -7,24 +7,16 @@ import { Product, ProductPreview } from "@/src/lib/types";
 import { calculateProductPriceRange } from "@/src/dal/helpers";
 
 const includeProductAllRelations = {
-  productOptionValues: {
+  productOptions: {
     include: {
-      optionValue: {
-        include: {
-          option: true,
-        },
-      },
+      optionValues: true,
     },
   },
   variants: {
     include: {
-      selectedOptions: {
+      optionValues: {
         include: {
-          optionValue: {
-            include: {
-              option: true,
-            },
-          },
+          productOption: true,
         },
       },
     },
@@ -68,17 +60,31 @@ export async function getAllProducts(): Promise<ProductPreview[] | null> {
   }
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
+export async function getProduct(
+  uniqueIdentifierObject: { slug: string } | { id: string },
+): Promise<Product | null> {
   try {
-    const product = await prisma.product.findUnique({
-      where: {
-        id: id,
-      },
-      include: includeProductAllRelations,
-    });
-    if (!product) return null;
-
-    return formatProduct(product);
+    if ("slug" in uniqueIdentifierObject) {
+      const product = await prisma.product.findUnique({
+        where: {
+          slug: uniqueIdentifierObject.slug,
+        },
+        include: includeProductAllRelations,
+      });
+      if (!product) return null;
+      return formatProduct(product);
+    } else if ("id" in uniqueIdentifierObject) {
+      const product = await prisma.product.findUnique({
+        where: {
+          id: uniqueIdentifierObject.id,
+        },
+        include: includeProductAllRelations,
+      });
+      if (!product) return null;
+      return formatProduct(product);
+    } else {
+      throw new Error("Pass in slug or id as unique product identifier");
+    }
   } catch (e) {
     throw e;
   }
