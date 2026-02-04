@@ -1,358 +1,293 @@
 import prisma from "@/src/lib/prisma";
 
 async function main() {
-  console.log("🌱 Starting seed...");
+  console.log("🌱 Starting database seed...");
 
-  // Clean the database (careful in production!)
-  console.log("🧹 Cleaning database...");
-  await prisma.variantOption.deleteMany();
+  // Clear existing data (in reverse order of dependencies)
+  console.log("🧹 Cleaning existing data...");
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
   await prisma.productVariant.deleteMany();
   await prisma.productOptionValue.deleteMany();
-  await prisma.optionValue.deleteMany();
-  await prisma.option.deleteMany();
+  await prisma.productOption.deleteMany();
   await prisma.product.deleteMany();
   await prisma.collection.deleteMany();
 
-  // ========================================
-  // 1. CREATE GLOBAL OPTIONS
-  // ========================================
-  console.log("📝 Creating options...");
-
-  const colorOption = await prisma.option.create({
-    data: {
-      name: "Color",
-      slug: "color",
-      values: {
-        create: [
-          { name: "Black", slug: "black" },
-          { name: "White", slug: "white" },
-          { name: "Navy", slug: "navy" },
-          { name: "Gray", slug: "gray" },
-          { name: "Red", slug: "red" },
-          { name: "Blue", slug: "blue" },
-          { name: "Green", slug: "green" },
-        ],
+  // Create Collections
+  console.log("📚 Creating collections...");
+  const collections = await Promise.all([
+    prisma.collection.create({
+      data: {
+        name: "Summer Collection",
+        slug: "summer-collection",
+        description: "Light and breezy styles for warm weather",
       },
-    },
-    include: { values: true },
-  });
-
-  const sizeOption = await prisma.option.create({
-    data: {
-      name: "Size",
-      slug: "size",
-      values: {
-        create: [
-          { name: "XS", slug: "xs" },
-          { name: "S", slug: "s" },
-          { name: "M", slug: "m" },
-          { name: "L", slug: "l" },
-          { name: "XL", slug: "xl" },
-          { name: "XXL", slug: "xxl" },
-        ],
+    }),
+    prisma.collection.create({
+      data: {
+        name: "New Arrivals",
+        slug: "new-arrivals",
+        description: "The latest additions to our store",
       },
-    },
-    include: { values: true },
-  });
-
-  const materialOption = await prisma.option.create({
-    data: {
-      name: "Material",
-      slug: "material",
-      values: {
-        create: [
-          { name: "Cotton", slug: "cotton" },
-          { name: "Polyester", slug: "polyester" },
-          { name: "Wool", slug: "wool" },
-          { name: "Linen", slug: "linen" },
-        ],
+    }),
+    prisma.collection.create({
+      data: {
+        name: "Best Sellers",
+        slug: "best-sellers",
+        description: "Our most popular items",
       },
-    },
-    include: { values: true },
-  });
+    }),
+  ]);
 
-  console.log("✅ Created options with values");
+  // Create Products with Options and Variants
+  console.log("👕 Creating products...");
 
-  // Get specific option values we'll use
-  const black = colorOption.values.find((v) => v.slug === "black")!;
-  const white = colorOption.values.find((v) => v.slug === "white")!;
-  const navy = colorOption.values.find((v) => v.slug === "navy")!;
-  const gray = colorOption.values.find((v) => v.slug === "gray")!;
-
-  const small = sizeOption.values.find((v) => v.slug === "s")!;
-  const medium = sizeOption.values.find((v) => v.slug === "m")!;
-  const large = sizeOption.values.find((v) => v.slug === "l")!;
-  const xl = sizeOption.values.find((v) => v.slug === "xl")!;
-
-  const cotton = materialOption.values.find((v) => v.slug === "cotton")!;
-  const wool = materialOption.values.find((v) => v.slug === "wool")!;
-
-  // ========================================
-  // 2. CREATE COLLECTIONS
-  // ========================================
-  console.log("📦 Creating collections...");
-
-  const shopAllCollection = await prisma.collection.create({
-    data: {
-      name: "Shop-All",
-      slug: "shop-all",
-      description: "All available products",
-    },
-  });
-
-  const menCollection = await prisma.collection.create({
-    data: {
-      name: "Men's Clothing",
-      slug: "mens-clothing",
-      description: "Stylish clothing for men",
-    },
-  });
-
-  const womenCollection = await prisma.collection.create({
-    data: {
-      name: "Women's Clothing",
-      slug: "womens-clothing",
-      description: "Elegant clothing for women",
-    },
-  });
-
-  const lifestyleCollection = await prisma.collection.create({
-    data: {
-      name: "Lifestyle products",
-      slug: "lifestyle-products",
-      description: "Exclusive products for you to live Preuve NY",
-    },
-  });
-
-  console.log("✅ Created collections");
-
-  // ========================================
-  // 3. CREATE PRODUCT 1: Classic T-Shirt
-  // ========================================
-  console.log("👕 Creating Classic T-Shirt...");
-
+  // Product 1: T-Shirt
   const tshirt = await prisma.product.create({
     data: {
-      name: "Classic T-Shirt",
+      name: "Classic Cotton T-Shirt",
+      slug: "classic-cotton-tshirt",
       status: true,
-      slug: "classic-t-shirt",
-      description: "A comfortable cotton t-shirt perfect for everyday wear",
+      description:
+        "A comfortable, everyday t-shirt made from 100% organic cotton",
       featuredImageURL:
         "https://www.aimeleondore.com/cdn/shop/files/FW25CT080_BOTANICALGARDEN_3_1600x.jpg?v=1764088217",
+      featuredImageAlt: "Classic cotton t-shirt",
       collections: {
-        connect: [{ id: menCollection.id }, { id: shopAllCollection.id }],
+        connect: [{ id: collections[0].id }, { id: collections[1].id }],
       },
-      productOptionValues: {
+      productOptions: {
         create: [
-          // Colors for this product
-          { optionValueId: black.id },
-          { optionValueId: white.id },
-          { optionValueId: navy.id },
-          // Sizes for this product
-          { optionValueId: small.id },
-          { optionValueId: medium.id },
-          { optionValueId: large.id },
-          { optionValueId: xl.id },
+          {
+            name: "Size",
+            position: 1,
+            optionValues: {
+              create: [
+                { name: "Small", slug: "s", position: 1 },
+                { name: "Medium", slug: "m", position: 2 },
+                { name: "Large", slug: "l", position: 3 },
+                { name: "X-Large", slug: "xl", position: 4 },
+              ],
+            },
+          },
+          {
+            name: "Color",
+            position: 2,
+            optionValues: {
+              create: [
+                { name: "White", slug: "white", position: 1 },
+                { name: "Black", slug: "black", position: 2 },
+                { name: "Navy", slug: "navy", position: 3 },
+              ],
+            },
+          },
         ],
+      },
+    },
+    include: {
+      productOptions: {
+        include: {
+          optionValues: true,
+        },
       },
     },
   });
 
-  // Create variants for t-shirt
-  const tshirtVariants = [
-    { color: black, size: small, stock: 10 },
-    { color: black, size: medium, stock: 15 },
-    { color: black, size: large, stock: 20 },
-    { color: black, size: xl, stock: 5 },
-    { color: white, size: small, stock: 8 },
-    { color: white, size: medium, stock: 12 },
-    { color: white, size: large, stock: 0 }, // Out of stock!
-    { color: white, size: xl, stock: 7 },
-    { color: navy, size: small, stock: 0 }, // Out of stock!
-    { color: navy, size: medium, stock: 10 },
-    { color: navy, size: large, stock: 15 },
-    { color: navy, size: xl, stock: 8 },
-  ];
+  // Get option values for creating variants
+  const sizeOption = tshirt.productOptions.find((opt) => opt.name === "Size")!;
+  const colorOption = tshirt.productOptions.find(
+    (opt) => opt.name === "Color",
+  )!;
 
-  for (const variant of tshirtVariants) {
-    await prisma.productVariant.create({
+  const sizes = sizeOption.optionValues;
+  const colors = colorOption.optionValues;
+
+  // Create all variant combinations for t-shirt
+  const tshirtVariants = [];
+  for (const size of sizes) {
+    for (const color of colors) {
+      const variant = await prisma.productVariant.create({
+        data: {
+          sku: `TSHIRT-${size.slug.toUpperCase()}-${color.slug.toUpperCase()}`,
+          price: 3000,
+          inventoryQuantity: Math.floor(Math.random() * 100) + 10,
+          //imageUrl: `https://example.com/images/tshirt-${color.slug}.jpg`,
+          //imageAlt: `${color.name} t-shirt in ${size.name}`,
+          productId: tshirt.id,
+          optionValues: {
+            connect: [{ id: size.id }, { id: color.id }],
+          },
+        },
+      });
+      tshirtVariants.push(variant);
+    }
+  }
+
+  // Product 2: Jeans
+  const jeans = await prisma.product.create({
+    data: {
+      name: "Slim Fit Jeans",
+      slug: "slim-fit-jeans",
+      status: true,
+      description:
+        "Modern slim fit jeans with stretch denim for all-day comfort",
+      featuredImageURL:
+        "https://www.aimeleondore.com/cdn/shop/files/FW25WP002_DeminPants_LightWash_1_600x.jpg?v=1755718415",
+      featuredImageAlt: "Slim fit jeans",
+      collections: {
+        connect: [{ id: collections[2].id }],
+      },
+      productOptions: {
+        create: [
+          {
+            name: "Waist Size",
+            position: 1,
+            optionValues: {
+              create: [
+                { name: "30", slug: "30", position: 1 },
+                { name: "32", slug: "32", position: 2 },
+                { name: "34", slug: "34", position: 3 },
+                { name: "36", slug: "36", position: 4 },
+              ],
+            },
+          },
+          {
+            name: "Length",
+            position: 2,
+            optionValues: {
+              create: [
+                { name: "30", slug: "30", position: 1 },
+                { name: "32", slug: "32", position: 2 },
+                { name: "34", slug: "34", position: 3 },
+              ],
+            },
+          },
+          {
+            name: "Wash",
+            position: 3,
+            optionValues: {
+              create: [
+                { name: "Light Blue", slug: "light-blue", position: 1 },
+                { name: "Dark Blue", slug: "dark-blue", position: 2 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    include: {
+      productOptions: {
+        include: {
+          optionValues: true,
+        },
+      },
+    },
+  });
+
+  const waistOption = jeans.productOptions.find(
+    (opt) => opt.name === "Waist Size",
+  )!;
+  const lengthOption = jeans.productOptions.find(
+    (opt) => opt.name === "Length",
+  )!;
+  const washOption = jeans.productOptions.find((opt) => opt.name === "Wash")!;
+
+  const waistSizes = waistOption.optionValues;
+  const lengths = lengthOption.optionValues;
+  const washes = washOption.optionValues;
+
+  // Create jeans variants (subset to avoid too many combinations)
+  const jeansVariants = [];
+  for (const waist of waistSizes) {
+    for (const length of lengths) {
+      for (const wash of washes) {
+        const variant = await prisma.productVariant.create({
+          data: {
+            sku: `JEANS-${waist.slug}-${length.slug}-${wash.slug.toUpperCase()}`,
+            price: 8000,
+            inventoryQuantity: Math.floor(Math.random() * 50) + 5,
+            //imageUrl: `https://example.com/images/jeans-${wash.slug}.jpg`,
+            //imageAlt: `${wash.name} jeans ${waist.name}x${length.name}`,
+            productId: jeans.id,
+            optionValues: {
+              connect: [{ id: waist.id }, { id: length.id }, { id: wash.id }],
+            },
+          },
+        });
+        jeansVariants.push(variant);
+      }
+    }
+  }
+
+  // Product 3: Sneakers (simpler, fewer options)
+  const sneakers = await prisma.product.create({
+    data: {
+      name: "Running Sneakers",
+      slug: "running-sneakers",
+      status: true,
+      description: "Lightweight running sneakers with excellent cushioning",
+      featuredImageURL:
+        "https://www.aimeleondore.com/cdn/shop/files/NB25FS009_CELERY_-19-48_600x.jpg?v=1765918985",
+      featuredImageAlt: "Running sneakers",
+      collections: {
+        connect: [{ id: collections[1].id }, { id: collections[2].id }],
+      },
+      productOptions: {
+        create: [
+          {
+            name: "Size",
+            position: 1,
+            optionValues: {
+              create: [
+                { name: "US 8", slug: "us-8", position: 1 },
+                { name: "US 9", slug: "us-9", position: 2 },
+                { name: "US 10", slug: "us-10", position: 3 },
+                { name: "US 11", slug: "us-11", position: 4 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    include: {
+      productOptions: {
+        include: {
+          optionValues: true,
+        },
+      },
+    },
+  });
+
+  const shoeSizeOption = sneakers.productOptions.find(
+    (opt) => opt.name === "Size",
+  )!;
+  const shoeSizes = shoeSizeOption.optionValues;
+
+  const sneakerVariants = [];
+  for (const size of shoeSizes) {
+    const variant = await prisma.productVariant.create({
       data: {
-        sku: `TSHIRT-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
-        productId: tshirt.id,
-        price: 3000,
-        stock: variant.stock,
-        selectedOptions: {
-          create: [
-            { optionValueId: variant.color.id },
-            { optionValueId: variant.size.id },
-          ],
+        sku: `SNEAKERS-${size.slug.toUpperCase()}`,
+        price: 13000,
+        inventoryQuantity: Math.floor(Math.random() * 30) + 5,
+        //imageUrl: "https://example.com/images/sneakers.jpg",
+        //imageAlt: `Running sneakers size ${size.name}`,
+        productId: sneakers.id,
+        optionValues: {
+          connect: [{ id: size.id }],
         },
       },
     });
+    sneakerVariants.push(variant);
   }
 
-  console.log("✅ Created Classic T-Shirt with variants");
-
-  // ========================================
-  // 4. CREATE PRODUCT 2: Wool Sweater
-  // ========================================
-  console.log("🧶 Creating Wool Sweater...");
-
-  const sweater = await prisma.product.create({
-    data: {
-      name: "Wool Sweater",
-      status: true,
-      slug: "wool-sweater",
-      description: "Warm and cozy wool sweater for cold days",
-      featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/KS022_WINERY_1_600x.jpg?v=1755640460",
-      collections: {
-        connect: [
-          { id: menCollection.id },
-          { id: womenCollection.id },
-          { id: shopAllCollection.id },
-        ],
-      },
-      productOptionValues: {
-        create: [
-          // Only Gray and Navy colors for sweater
-          { optionValueId: gray.id },
-          { optionValueId: navy.id },
-          // Sizes
-          { optionValueId: medium.id },
-          { optionValueId: large.id },
-          { optionValueId: xl.id },
-        ],
-      },
-    },
-  });
-
-  // Create variants for sweater
-  const sweaterVariants = [
-    { color: gray, size: medium, stock: 5 },
-    { color: gray, size: large, stock: 8 },
-    { color: gray, size: xl, stock: 3 },
-    { color: navy, size: medium, stock: 0 }, // Out of stock!
-    { color: navy, size: large, stock: 6 },
-    { color: navy, size: xl, stock: 4 },
-  ];
-
-  for (const variant of sweaterVariants) {
-    await prisma.productVariant.create({
-      data: {
-        sku: `SWEATER-${variant.color.slug.toUpperCase()}-${variant.size.slug.toUpperCase()}`,
-        productId: sweater.id,
-        price: 8000,
-        stock: variant.stock,
-        selectedOptions: {
-          create: [
-            { optionValueId: variant.color.id },
-            { optionValueId: variant.size.id },
-          ],
-        },
-      },
-    });
-  }
-
-  console.log("✅ Created Wool Sweater with variants");
-
-  // ========================================
-  // 5. CREATE PRODUCT 3: Cotton Socks (Single Option)
-  // ========================================
-  console.log("🧦 Creating Cotton Socks...");
-
-  const socks = await prisma.product.create({
-    data: {
-      name: "Cotton Socks",
-      status: true,
-      slug: "cotton-socks",
-      description: "Comfortable cotton socks, sold in pairs",
-      featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/4x5_FW24D1_ACC_FW24AS058_KALAMATA_4544_1600x.jpg?v=1724172011",
-      collections: {
-        connect: [{ id: menCollection.id }, { id: shopAllCollection.id }],
-      },
-      productOptionValues: {
-        create: [
-          // Only color option, no size
-          { optionValueId: black.id },
-          { optionValueId: white.id },
-          { optionValueId: gray.id },
-        ],
-      },
-    },
-  });
-
-  // Create variants for socks (only color, no size)
-  const socksVariants = [
-    { color: black, stock: 50 },
-    { color: white, stock: 30 },
-    { color: gray, stock: 25 },
-  ];
-
-  for (const variant of socksVariants) {
-    await prisma.productVariant.create({
-      data: {
-        sku: `SOCKS-${variant.color.slug.toUpperCase()}`,
-        productId: socks.id,
-        price: 1300,
-        stock: variant.stock,
-        selectedOptions: {
-          create: [{ optionValueId: variant.color.id }],
-        },
-      },
-    });
-  }
-
-  console.log("✅ Created Cotton Socks with variants");
-
-  // ========================================
-  // 5. CREATE PRODUCT 4: Cotton Scarf (No options)
-  // ========================================
-  console.log("Creating Scarf...");
-  // Product with no options
-  const mug = await prisma.product.create({
-    data: {
-      name: "Scarf",
-      status: true,
-      slug: "scarf",
-      description: "Exclusive Scarf for the holiday season",
-      featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/FW25AS020_PorscheScarf_TangoRed_22_600x.jpg?v=1760551547",
-      collections: {
-        connect: [{ id: lifestyleCollection.id }, { id: shopAllCollection.id }],
-      },
-    },
-  });
-
-  console.log("✅ Created Scarf with variants");
-
-  await prisma.productVariant.create({
-    data: {
-      sku: `MUG`,
-      productId: mug.id,
-      price: 8000,
-      stock: 10,
-    },
-  });
-
-  console.log("Created Scarf variant...");
-
-  // ========================================
-  // SUMMARY
-  // ========================================
-  console.log("\n🎉 Seed completed successfully!\n");
-  console.log("Summary:");
-  console.log("- 3 Options (Color, Size, Material)");
-  console.log("- 17 Option Values");
-  console.log("- 3 Collections");
-  console.log("- 4 Products");
-  console.log("- 21 Product Variants");
-  console.log("\nYou can now test with:");
-  console.log("- /products/classic-t-shirt (2 options: Color & Size)");
-  console.log("- /products/wool-sweater (2 options: Color & Size)");
-  console.log("- /products/cotton-socks (1 option: Color only)");
-  console.log("- /products/scarf (No options)");
+  console.log("✅ Database seeded successfully!");
+  console.log(`
+📊 Summary:
+- Collections: ${collections.length}
+- Products: 3
+- Product Variants: ${tshirtVariants.length + jeansVariants.length + sneakerVariants.length}
+  `);
 }
 
 main()
