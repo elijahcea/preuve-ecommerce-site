@@ -1,52 +1,32 @@
-import "server-only";
-
 import {
-  SelectedOption,
-  ProductVariant,
-  Product,
   ProductOption,
+  Product,
+  ProductVariant,
+  SelectedOption,
+  ProductCreateInput,
 } from "@/src/lib/types";
-import { ProductVariantRaw, ProductWithAllRelations } from "./product/queries";
-
-export function createProductHref(
-  productSlug: string,
-  selectedOptions: SelectedOption[],
-) {
-  const searchParams = new URLSearchParams();
-  for (const so of selectedOptions) {
-    searchParams.set(so.name.toLowerCase(), so.value.toLowerCase());
-  }
-  const queryString =
-    selectedOptions.length === 0 ? "" : "?" + searchParams.toString();
-
-  return `/products/${productSlug}` + queryString;
-}
-
-export function calculatePriceInDollars(price: number): number {
-  return price / 100;
-}
+import { ProductWithAllRelations, ProductVariantRaw } from "./prismaTypes";
+import { calculatePriceInDollars } from "../utils";
 
 export function formatProduct(product: ProductWithAllRelations): Product {
-  const options: ProductOption[] = product.productOptions.map(
-    (productOption) => {
-      return {
-        id: productOption.id,
-        position: productOption.position,
-        name: productOption.name,
-        optionValues: productOption.optionValues.map((optionValue) => ({
-          id: optionValue.id,
-          position: optionValue.position,
-          name: optionValue.name,
-          optionId: optionValue.productOptionId,
-        })),
-      };
-    },
-  );
+  const options: ProductOption[] = product.options.map((option) => {
+    return {
+      id: option.id,
+      position: option.position,
+      name: option.name,
+      values: option.values.map((value) => ({
+        id: value.id,
+        position: value.position,
+        name: value.name,
+        optionId: value.productOptionId,
+      })),
+    };
+  });
 
   // Transform variants
   const transformedVariants: ProductVariant[] = product.variants.map(
     (variant) => {
-      const selectedOptions: SelectedOption[] = variant.optionValues.map(
+      const selectedOptions: SelectedOption[] = variant.selectedValues.map(
         (optionValue) => ({
           name: optionValue.productOption.name,
           value: optionValue.name,
@@ -71,7 +51,7 @@ export function formatProduct(product: ProductWithAllRelations): Product {
       return {
         id: variant.id,
         sku: variant.sku,
-        productName: product.name,
+        productTitle: product.title,
         price: calculatePriceInDollars(variant.price),
         inventoryQuantity: variant.inventoryQuantity,
         ...image,
@@ -87,8 +67,9 @@ export function formatProduct(product: ProductWithAllRelations): Product {
     id: product.id,
     slug: product.slug,
     status: product.status,
-    name: product.name,
+    title: product.title,
     priceRange: calculateProductPriceRange(product.variants),
+    hasOnlyDefaultVariant: product.hasOnlyDefaultVariant,
     description: product.description,
     featuredImage: {
       url: product.featuredImageURL,
@@ -102,6 +83,20 @@ export function formatProduct(product: ProductWithAllRelations): Product {
   };
 }
 
+export function createProductHref(
+  productSlug: string,
+  selectedOptions: SelectedOption[],
+) {
+  const searchParams = new URLSearchParams();
+  for (const so of selectedOptions) {
+    searchParams.set(so.name.toLowerCase(), so.value.toLowerCase());
+  }
+  const queryString =
+    selectedOptions.length === 0 ? "" : "?" + searchParams.toString();
+
+  return `/products/${productSlug}` + queryString;
+}
+
 export function calculateProductPriceRange(variants: ProductVariantRaw[]) {
   const prices = variants.map((variant) =>
     calculatePriceInDollars(variant.price),
@@ -111,4 +106,15 @@ export function calculateProductPriceRange(variants: ProductVariantRaw[]) {
     minVariantPrice: Math.min(...prices),
     maxVariantPrice: Math.max(...prices),
   };
+}
+
+export function checkHasOnlyDefaultVariant(productInput: ProductCreateInput) {
+  if (productInput.product.options.length > 1) {
+    return false;
+  } else if (
+    productInput.product.options[0].name === "Title" &&
+    productInput.product.variants[0].optionValues[0].name === "Default Title"
+  ) {
+    return true;
+  } else return false;
 }
