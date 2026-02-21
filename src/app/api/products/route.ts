@@ -1,16 +1,28 @@
 import { getAllProducts } from "@/src/dal/product/queries";
 import { createProductWithOptions } from "@/src/dal/product/mutations";
-import { Product, ProductCreateInput } from "@/src/lib/types";
+import { Product, ProductCreateInput, ProductPreview } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { createProductVariant } from "@/src/dal/productVariant/mutations";
 
+type GetProductsResponse = {
+  products: ProductPreview[];
+};
+
+type CreateProductResponse = {
+  product: Product;
+};
+
 export async function GET(
   request: NextRequest,
-): Promise<NextResponse<Product>> {
+): Promise<NextResponse<GetProductsResponse>> {
   try {
     const products = await getAllProducts();
 
-    return new NextResponse(JSON.stringify(products ?? []), {
+    const response = {
+      products: products ?? [],
+    };
+
+    return new NextResponse(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -24,7 +36,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-): Promise<NextResponse<Product>> {
+): Promise<NextResponse<CreateProductResponse>> {
   try {
     const body = await request.json();
     const { product }: ProductCreateInput = body;
@@ -45,7 +57,11 @@ export async function POST(
 
     newProduct.variants = productVariants;
 
-    return new NextResponse(JSON.stringify(newProduct), {
+    const response = {
+      product: newProduct,
+    };
+
+    return new NextResponse(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

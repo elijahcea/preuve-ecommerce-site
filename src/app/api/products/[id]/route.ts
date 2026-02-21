@@ -1,10 +1,15 @@
 import { getProduct } from "@/src/dal/product/queries";
+import { Product } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
+
+type GetProductResponse = {
+  product: Product;
+};
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+): Promise<NextResponse<GetProductResponse>> {
   try {
     const id = (await params).id;
 
@@ -16,7 +21,11 @@ export async function GET(
         headers: { "Content-Type": "application/json" },
       });
 
-    return new NextResponse(JSON.stringify(product), {
+    const response = {
+      product,
+    };
+
+    return new NextResponse(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
