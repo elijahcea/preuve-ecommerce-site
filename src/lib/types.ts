@@ -129,10 +129,10 @@ export type ProductVariantCreateInput = {
   price: number;
   inventoryQuantity: number;
 
-  optionValues: VariantOptionValueInput[];
+  optionValues: VariantOptionValueCreateInput[];
 };
 
-export type VariantOptionValueInput = {
+export type VariantOptionValueCreateInput = {
   name: string;
   optionName: string;
 };

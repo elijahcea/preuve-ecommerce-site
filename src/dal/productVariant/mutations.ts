@@ -3,7 +3,7 @@ import {
   createProductVariantInput,
   includeProductVariantWithOptionValues,
 } from "./prismaTypes";
-import { ProductOption, VariantOptionValueInput } from "@/src/lib/types";
+import { ProductOption, VariantOptionValueCreateInput } from "@/src/lib/types";
 import { formatVariant } from "./utils";
 import { getProduct } from "../product/queries";
 
@@ -13,7 +13,7 @@ export async function createProductVariant(
   sku: string,
   price: number,
   inventoryQuantity: number,
-  variantOptionValues: VariantOptionValueInput[],
+  variantOptionValues: VariantOptionValueCreateInput[],
 ) {
   const product = await getProduct({ id: productId });
   if (!product) throw new Error(`Product with ID: ${productId} does not exist`);

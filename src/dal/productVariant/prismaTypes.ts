@@ -1,5 +1,5 @@
 import { Prisma } from "@/src/generated/prisma/client";
-import { ProductOption, VariantOptionValueInput } from "@/src/lib/types";
+import { ProductOption, VariantOptionValueCreateInput } from "@/src/lib/types";
 
 export const includeProductVariantWithOptionValues = {
   selectedValues: {
@@ -15,7 +15,7 @@ export const createProductVariantInput = (
   sku: string,
   price: number,
   inventoryQuantity: number,
-  optionValues: VariantOptionValueInput[],
+  optionValues: VariantOptionValueCreateInput[],
 ) => {
   return {
     product: {
