@@ -44,7 +44,7 @@ export default function VariantSelector({
               <option disabled value="">
                 {`Select ${optionNameLowerCase}`}
               </option>
-              {option.optionValues.map((optionValue) => {
+              {option.values.map((optionValue) => {
                 return (
                   <option
                     key={optionValue.id}

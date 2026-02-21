@@ -43,7 +43,7 @@ function createNewItem(variant: ProductVariant, product: Product): CartItem {
     quantity: 1,
     merchandise: {
       variantId: variant.id,
-      productName: product.name,
+      productTitle: product.title,
       sku: variant.sku,
       price: variant.price,
       image: variant.image ?? product.featuredImage,

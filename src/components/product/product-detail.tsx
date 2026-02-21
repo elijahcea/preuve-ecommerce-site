@@ -26,7 +26,7 @@ export default function ProductDetail({ product }: { product: Product }) {
         <div>
           <Image
             src={product.featuredImage.url}
-            alt={product.featuredImage.altText || product.name}
+            alt={product.featuredImage.altText || product.title}
             height={750}
             width={600}
             style={{ width: "100%", height: "auto" }}
@@ -38,7 +38,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       <div className="flex flex-col gap-4 justify-start sticky top-0 pt-5 pr-5">
         <div>
           <div className="flex align-middle justify-between">
-            <h2 className="font-semibold text-xl">{product.name}</h2>
+            <h2 className="font-semibold text-xl">{product.title}</h2>
             <Price
               amount={
                 selectedVariant

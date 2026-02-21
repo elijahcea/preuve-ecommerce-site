@@ -2,7 +2,7 @@ export type ProductOption = {
   id: string;
   position: number;
   name: string;
-  optionValues: ProductOptionValue[];
+  values: ProductOptionValue[];
 };
 
 export type ProductOptionValue = {
@@ -21,10 +21,10 @@ export type SelectedOption = {
 export type ProductVariant = {
   id: string;
   sku: string;
-  productName: string;
+  productTitle: string;
   price: number;
   inventoryQuantity: number;
-  image?: Image;
+  image: Image | null;
   href: string;
   createdAt: Date;
   updatedAt: Date;
@@ -36,13 +36,14 @@ export type Product = {
   id: string;
   status: boolean;
   slug: string;
-  name: string;
+  title: string;
   description: string;
+  hasOnlyDefaultVariant: boolean;
   priceRange: {
     minVariantPrice: number;
     maxVariantPrice: number;
   };
-  featuredImage?: Image;
+  featuredImage: Image | null;
   createdAt: Date;
   updatedAt: Date;
 
@@ -71,19 +72,19 @@ export type CartItem = {
 
 export type Merchandise = {
   variantId: string;
-  sku: string;
-  productName: string;
+  sku: string | null;
+  productTitle: string;
   price: number;
-  image?: Image;
+  image: Image | null;
   href: string;
   selectedOptions: SelectedOption[];
 };
 
 export type Image = {
   url: string | null;
-  altText?: string | null;
-  width?: number;
-  height?: number;
+  altText: string | null;
+  width: number;
+  height: number;
 };
 
 export type ProductPreview = Omit<
@@ -94,9 +95,46 @@ export type ProductPreview = Omit<
 export type Collection = {
   id: string;
   slug: string;
-  name: string;
+  title: string;
   description: string;
   products: ProductPreview[];
 };
 
 export type CollectionPreview = Omit<Collection, "products">;
+
+// Input types
+export type ProductCreateInput = {
+  product: {
+    status: boolean;
+    title: string;
+    description: string;
+    featuredImage: Image | null;
+    collectionIds: string[];
+    options: OptionCreateInput[];
+    variants: ProductVariantCreateInput[];
+  };
+};
+
+export type OptionCreateInput = {
+  position: number;
+  name: string;
+  values: OptionValueCreateInput[];
+};
+
+export type OptionValueCreateInput = {
+  position: number;
+  name: string;
+};
+
+export type ProductVariantCreateInput = {
+  sku: string;
+  price: number;
+  inventoryQuantity: number;
+
+  optionValues: VariantOptionValueInput[];
+};
+
+export type VariantOptionValueInput = {
+  name: string;
+  optionName: string;
+};

@@ -102,7 +102,7 @@ export default function CartModal() {
                                     <Image
                                       alt={
                                         item.merchandise.image.altText ??
-                                        item.merchandise.productName
+                                        item.merchandise.productTitle
                                       }
                                       src={item.merchandise.image.url}
                                       height={750}
@@ -124,7 +124,7 @@ export default function CartModal() {
                                             setIsOpen(false);
                                           }}
                                         >
-                                          {item.merchandise.productName}
+                                          {item.merchandise.productTitle}
                                         </a>
                                       </h3>
                                       <div className="flex gap-2.5 text-lg">

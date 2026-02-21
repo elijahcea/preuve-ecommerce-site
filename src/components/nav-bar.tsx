@@ -44,7 +44,7 @@ export default function NavBar({
                         href={`/collections/${collection.slug}`}
                         className="border-b border-b-transparent hover:border-b-inherit"
                       >
-                        {collection.name}
+                        {collection.title}
                       </CloseButton>
                     ))}
                   </div>
