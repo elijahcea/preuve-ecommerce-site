@@ -1,34 +1,10 @@
 import "server-only";
 
 import prisma from "@/src/lib/prisma";
-import { Prisma } from "@/src/generated/prisma/client";
-import { formatProduct } from "@/src/dal/helpers";
+import { formatProduct } from "./utils";
 import { Product, ProductPreview } from "@/src/lib/types";
-import { calculateProductPriceRange } from "@/src/dal/helpers";
-
-const includeProductAllRelations = {
-  productOptions: {
-    include: {
-      optionValues: true,
-    },
-  },
-  variants: {
-    include: {
-      optionValues: {
-        include: {
-          productOption: true,
-        },
-      },
-    },
-  },
-  collections: true,
-} satisfies Prisma.ProductInclude;
-
-export type ProductWithAllRelations = Prisma.ProductGetPayload<{
-  include: typeof includeProductAllRelations;
-}>;
-
-export type ProductVariantRaw = Prisma.ProductVariantGetPayload<null>;
+import { calculateProductPriceRange } from "./utils";
+import { includeProductAllRelations } from "./prismaTypes";
 
 export async function getAllProducts(): Promise<ProductPreview[] | null> {
   try {
@@ -44,12 +20,13 @@ export async function getAllProducts(): Promise<ProductPreview[] | null> {
         id: product.id,
         slug: product.slug,
         status: product.status,
-        name: product.name,
+        title: product.title,
         priceRange: calculateProductPriceRange(product.variants),
         description: product.description,
+        hasOnlyDefaultVariant: product.hasOnlyDefaultVariant,
         featuredImage: {
           url: product.featuredImageURL,
-          alt: product.featuredImageAlt,
+          altText: product.featuredImageAlt,
         },
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
@@ -152,7 +129,7 @@ export async function getCollectionProducts({
 
     return {
       collection: {
-        title: collection.name,
+        title: collection.title,
         description: collection.description,
       },
       formattedProducts,
@@ -169,7 +146,7 @@ export async function searchProducts(searchInput: string) {
       where: {
         OR: [
           {
-            name: {
+            title: {
               contains: searchInput,
               mode: "insensitive",
             },
@@ -183,7 +160,7 @@ export async function searchProducts(searchInput: string) {
           {
             collections: {
               some: {
-                name: {
+                title: {
                   contains: searchInput,
                   mode: "insensitive",
                 },

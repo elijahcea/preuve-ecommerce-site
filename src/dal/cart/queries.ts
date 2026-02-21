@@ -4,8 +4,9 @@ import prisma from "@/src/lib/prisma";
 import { Prisma } from "@/src/generated/prisma/client";
 import { Cart, CartItem, SelectedOption } from "@/src/lib/types";
 import { cookies } from "next/headers";
-import { calculateCartTotals, calculateItemCost } from "./helpers";
-import { calculatePriceInDollars, createProductHref } from "@/src/dal/helpers";
+import { calculateCartTotals, calculateItemCost } from "./utils";
+import { calculatePriceInDollars } from "@/src/dal/utils";
+import { createProductHref } from "../product/utils";
 
 const selectCartWithItems = {
   id: true,
@@ -17,11 +18,11 @@ const selectCartWithItems = {
         include: {
           product: {
             select: {
-              name: true,
+              title: true,
               slug: true,
             },
           },
-          optionValues: {
+          selectedValues: {
             include: {
               productOption: {
                 select: {
@@ -54,16 +55,11 @@ export async function getCart(): Promise<Cart | undefined> {
     const cartItems: CartItem[] = res.items.map((item) => {
       const price = calculatePriceInDollars(item.productVariant.price);
       const selectedOptions: SelectedOption[] =
-        item.productVariant.optionValues.map((optionValue) => {
+        item.productVariant.selectedValues.map((value) => {
           return {
-            name: optionValue.productOption.name,
-            value: optionValue.name,
-            optionValue: {
-              id: optionValue.name,
-              position: optionValue.position,
-              name: optionValue.name,
-              optionId: optionValue.productOptionId,
-            },
+            name: value.productOption.name,
+            value: value.name,
+            optionValueId: value.id,
           };
         });
 
@@ -73,7 +69,7 @@ export async function getCart(): Promise<Cart | undefined> {
         quantity: item.quantity,
         merchandise: {
           variantId: item.productVariant.id,
-          productName: item.productVariant.product.name,
+          productTitle: item.productVariant.product.title,
           sku: item.productVariant.sku,
           price: price,
           image: {

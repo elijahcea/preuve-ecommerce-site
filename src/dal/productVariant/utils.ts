@@ -12,26 +12,12 @@ export function formatVariant(
   }>,
 ): ProductVariant {
   const selectedOptions: SelectedOption[] = variant.selectedValues.map(
-    (optionValue) => ({
-      name: optionValue.productOption.name,
-      value: optionValue.name,
-      optionValue: {
-        id: optionValue.id,
-        position: optionValue.position,
-        name: optionValue.name,
-        optionId: optionValue.productOptionId,
-      },
+    (value) => ({
+      name: value.productOption.name,
+      value: value.name,
+      optionValueId: value.id,
     }),
   );
-
-  const image = !variant.imageUrl
-    ? {}
-    : {
-        image: {
-          url: variant.imageUrl,
-          altText: variant.imageAlt || "",
-        },
-      };
 
   return {
     id: variant.id,
@@ -39,7 +25,10 @@ export function formatVariant(
     productTitle,
     price: calculatePriceInDollars(variant.price),
     inventoryQuantity: variant.inventoryQuantity,
-    ...image,
+    image: {
+      url: variant.imageUrl,
+      altText: variant.imageAlt || "",
+    },
     href: createProductHref(productSlug, selectedOptions),
     createdAt: variant.createdAt,
     updatedAt: variant.updatedAt,

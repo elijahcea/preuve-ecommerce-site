@@ -5,10 +5,15 @@ import {
   SelectedOption,
   ProductCreateInput,
 } from "@/src/lib/types";
-import { ProductWithAllRelations, ProductVariantRaw } from "./prismaTypes";
 import { calculatePriceInDollars } from "../utils";
+import { includeProductAllRelations } from "./prismaTypes";
+import { Prisma } from "@/src/generated/prisma/client";
 
-export function formatProduct(product: ProductWithAllRelations): Product {
+export function formatProduct(
+  product: Prisma.ProductGetPayload<{
+    include: typeof includeProductAllRelations;
+  }>,
+): Product {
   const options: ProductOption[] = product.options.map((option) => {
     return {
       id: option.id,
@@ -23,30 +28,15 @@ export function formatProduct(product: ProductWithAllRelations): Product {
     };
   });
 
-  // Transform variants
   const transformedVariants: ProductVariant[] = product.variants.map(
     (variant) => {
       const selectedOptions: SelectedOption[] = variant.selectedValues.map(
-        (optionValue) => ({
-          name: optionValue.productOption.name,
-          value: optionValue.name,
-          optionValue: {
-            id: optionValue.id,
-            position: optionValue.position,
-            name: optionValue.name,
-            optionId: optionValue.productOptionId,
-          },
+        (value) => ({
+          name: value.productOption.name,
+          value: value.name,
+          optionValueId: value.id,
         }),
       );
-
-      const image = !variant.imageUrl
-        ? {}
-        : {
-            image: {
-              url: variant.imageUrl,
-              altText: variant.imageAlt || "",
-            },
-          };
 
       return {
         id: variant.id,
@@ -54,7 +44,10 @@ export function formatProduct(product: ProductWithAllRelations): Product {
         productTitle: product.title,
         price: calculatePriceInDollars(variant.price),
         inventoryQuantity: variant.inventoryQuantity,
-        ...image,
+        image: {
+          url: variant.imageUrl,
+          altText: variant.imageAlt,
+        },
         href: createProductHref(product.slug, selectedOptions),
         createdAt: variant.createdAt,
         updatedAt: variant.updatedAt,
@@ -97,7 +90,9 @@ export function createProductHref(
   return `/products/${productSlug}` + queryString;
 }
 
-export function calculateProductPriceRange(variants: ProductVariantRaw[]) {
+export function calculateProductPriceRange(
+  variants: Prisma.ProductVariantGetPayload<null>[],
+) {
   const prices = variants.map((variant) =>
     calculatePriceInDollars(variant.price),
   );
