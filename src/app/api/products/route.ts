@@ -1,10 +1,12 @@
 import { getAllProducts } from "@/src/dal/product/queries";
 import { createProductWithOptions } from "@/src/dal/product/mutations";
-import { ProductCreateInput } from "@/src/lib/types";
+import { Product, ProductCreateInput } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { createProductVariant } from "@/src/dal/productVariant/mutations";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<Product>> {
   try {
     const products = await getAllProducts();
 
@@ -20,7 +22,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+): Promise<NextResponse<Product>> {
   try {
     const body = await request.json();
     const { product }: ProductCreateInput = body;
