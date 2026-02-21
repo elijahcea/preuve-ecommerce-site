@@ -15,12 +15,12 @@ export type ProductOptionValue = {
 export type SelectedOption = {
   name: string;
   value: string;
-  optionValue: ProductOptionValue;
+  optionValueId: string;
 };
 
 export type ProductVariant = {
   id: string;
-  sku: string;
+  sku: string | null;
   productTitle: string;
   price: number;
   inventoryQuantity: number;
@@ -83,8 +83,6 @@ export type Merchandise = {
 export type Image = {
   url: string | null;
   altText: string | null;
-  width: number;
-  height: number;
 };
 
 export type ProductPreview = Omit<
