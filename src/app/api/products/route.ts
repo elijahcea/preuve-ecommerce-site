@@ -1,16 +1,12 @@
 import { getAllProducts } from "@/src/dal/product/queries";
 import { createProductWithOptions } from "@/src/dal/product/mutations";
-import { Product, ProductCreateInput, ProductPreview } from "@/src/lib/types";
+import {
+  ProductCreateInput,
+  GetProductsResponse,
+  CreateProductResponse,
+} from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { createProductVariant } from "@/src/dal/productVariant/mutations";
-
-type GetProductsResponse = {
-  products: ProductPreview[];
-};
-
-type CreateProductResponse = {
-  product: Product;
-};
 
 export async function GET(
   request: NextRequest,

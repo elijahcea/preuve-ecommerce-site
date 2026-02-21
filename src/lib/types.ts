@@ -100,7 +100,7 @@ export type Collection = {
 
 export type CollectionPreview = Omit<Collection, "products">;
 
-// Input types
+// API input types
 export type ProductCreateInput = {
   product: {
     status: boolean;
@@ -135,4 +135,17 @@ export type ProductVariantCreateInput = {
 export type VariantOptionValueCreateInput = {
   name: string;
   optionName: string;
+};
+
+// API Response Types
+export type GetProductResponse = {
+  product: Product;
+};
+
+export type GetProductsResponse = {
+  products: ProductPreview[];
+};
+
+export type CreateProductResponse = {
+  product: Product;
 };

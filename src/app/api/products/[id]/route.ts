@@ -1,10 +1,6 @@
 import { getProduct } from "@/src/dal/product/queries";
-import { Product } from "@/src/lib/types";
+import { Product, GetProductResponse } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
-
-type GetProductResponse = {
-  product: Product;
-};
 
 export async function GET(
   request: NextRequest,
