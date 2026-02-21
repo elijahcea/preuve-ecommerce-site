@@ -20,16 +20,17 @@ datasource db {
 }
 
 model Product {
-  id               String           @id @default(cuid())
-  slug             String           @unique
-  status           Boolean
-  name             String
-  description      String
-  featuredImageURL String?
-  featuredImageAlt String?
-  productOptions   ProductOption[]
-  collections      Collection[]
-  variants         ProductVariant[]
+  id                    String           @id @default(cuid())
+  slug                  String           @unique
+  status                Boolean
+  title                 String           @unique
+  hasOnlyDefaultVariant Boolean
+  description           String
+  featuredImageURL      String?
+  featuredImageAlt      String?
+  options               ProductOption[]
+  collections           Collection[]
+  variants              ProductVariant[]
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -50,9 +51,9 @@ model Product {
 // }
 
 model ProductOptionValue {
-  id   String @id @default(cuid())
-  name String
-  slug String
+  id       String @id @default(cuid())
+  name     String
+  slug     String
   position Int
 
   productOption   ProductOption @relation(fields: [productOptionId], references: [id], onDelete: Cascade)
@@ -63,8 +64,9 @@ model ProductOptionValue {
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
-  @@unique([productOptionId, slug])
+  @@unique([name, productOptionId])
   @@index([productOptionId])
+
 }
 
 // model ProductOptionValue {
@@ -91,10 +93,12 @@ model ProductOption {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 
-  optionValues ProductOptionValue[]
+  values ProductOptionValue[]
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+
+  @@unique([name, productId])
 }
 
 // model VariantOption {
@@ -116,29 +120,29 @@ model ProductOption {
 
 model ProductVariant {
   id                String  @id @default(cuid())
-  sku               String  @unique // Stock keeping unit
   price             Int
   inventoryQuantity Int
+  sku               String?
   imageUrl          String?
   imageAlt          String?
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 
-  optionValues ProductOptionValue[]
+  selectedValues ProductOptionValue[]
 
   carts CartItem[]
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+  //@@index([sku])
 
   @@index([productId])
-  @@index([sku])
 }
 
 model Collection {
   id          String    @id @default(cuid())
-  name        String
+  title       String
   slug        String    @unique
   description String
   products    Product[]
