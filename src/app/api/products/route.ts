@@ -1,5 +1,5 @@
 import { getAllProducts } from "@/src/dal/product/queries";
-import { createProductWithOptions } from "@/src/dal/product/mutations";
+import { createProduct } from "@/src/dal/product/mutations";
 import {
   ProductCreateInput,
   GetProductsResponse,
@@ -36,22 +36,7 @@ export async function POST(
   try {
     const body = await request.json();
     const { product }: ProductCreateInput = body;
-    const newProduct = await createProductWithOptions({ product });
-    const productVariants = await Promise.all(
-      product.variants.map(async (variant) => {
-        const newVariant = await createProductVariant(
-          newProduct.id,
-          newProduct.options,
-          variant.sku,
-          variant.price,
-          variant.inventoryQuantity,
-          variant.optionValues,
-        );
-        return newVariant;
-      }),
-    );
-
-    newProduct.variants = productVariants;
+    const newProduct = await createProduct({ product });
 
     const response = {
       product: newProduct,
