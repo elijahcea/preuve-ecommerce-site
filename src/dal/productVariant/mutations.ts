@@ -10,7 +10,7 @@ import { getProduct } from "../product/queries";
 export async function createProductVariant(
   productId: string,
   productOptions: ProductOption[],
-  sku: string,
+  sku: string | null,
   price: number,
   inventoryQuantity: number,
   variantOptionValues: VariantOptionValueCreateInput[],

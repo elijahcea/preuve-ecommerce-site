@@ -12,7 +12,7 @@ export const includeProductVariantWithOptionValues = {
 export const createProductVariantInput = (
   productId: string,
   productOptions: ProductOption[],
-  sku: string,
+  sku: string | null,
   price: number,
   inventoryQuantity: number,
   optionValues: VariantOptionValueCreateInput[],
