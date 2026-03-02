@@ -1,10 +1,11 @@
 import { getCollection } from "@/src/dal/collection/queries";
+import { GetCollectionResponse } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+): Promise<NextResponse<GetCollectionResponse>> {
   try {
     const id = (await params).id;
 
@@ -16,7 +17,11 @@ export async function GET(
         headers: { "Content-Type": "application/json" },
       });
 
-    return new NextResponse(JSON.stringify(collection), {
+    const response = {
+      collection,
+    };
+
+    return new NextResponse(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

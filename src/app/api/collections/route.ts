@@ -1,11 +1,18 @@
 import { getAllCollections } from "@/src/dal/collection/queries";
+import { GetCollectionsResponse } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<GetCollectionsResponse>> {
   try {
     const collections = await getAllCollections();
 
-    return new NextResponse(JSON.stringify(collections ?? []), {
+    const response = {
+      collections: collections ?? [],
+    };
+
+    return new NextResponse(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

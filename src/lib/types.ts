@@ -149,3 +149,15 @@ export type GetProductsResponse = {
 export type CreateProductResponse = {
   product: Product;
 };
+
+export type GetCollectionResponse = {
+  collection: Collection;
+};
+
+export type GetCollectionsResponse = {
+  collections: CollectionPreview[];
+};
+
+export type CreateCollectionResponse = {
+  collection: Collection;
+};
