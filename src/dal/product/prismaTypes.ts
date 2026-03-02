@@ -46,7 +46,7 @@ export const createProductInput = (
         return {
           name: option.name,
           position: option.position,
-          optionValues: {
+          values: {
             create: option.values.map((value) => {
               return {
                 name: value.name,
