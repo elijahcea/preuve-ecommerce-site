@@ -60,7 +60,9 @@ export async function getProduct(
       if (!product) return null;
       return formatProduct(product);
     } else {
-      throw new Error("Pass in slug or id as unique product identifier");
+      throw new Error(
+        "Provide product slug or id as unique product identifier",
+      );
     }
   } catch (e) {
     throw e;

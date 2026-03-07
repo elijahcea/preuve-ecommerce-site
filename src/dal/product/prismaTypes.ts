@@ -1,6 +1,6 @@
 import { Prisma } from "@/src/generated/prisma/client";
 import { slugify } from "../utils";
-import { OptionCreateInput } from "@/src/lib/types";
+import { OptionCreateDTO } from "@/src/lib/types";
 
 export const includeProductAllRelations = {
   options: {
@@ -26,7 +26,7 @@ export const createProductInput = (
   description: string,
   hasOnlyDefaultVariant: boolean,
   collectionIds: string[],
-  options: OptionCreateInput[],
+  options: OptionCreateDTO[],
 ) => {
   return {
     slug: slugify(title),
@@ -35,23 +35,22 @@ export const createProductInput = (
     description,
     hasOnlyDefaultVariant,
     collections: {
-      connect: collectionIds.map((id) => {
+      connect: collectionIds.map((collectionId) => {
         return {
-          id: id,
+          id: collectionId,
         };
       }),
     },
     options: {
-      create: options.map((option) => {
+      create: options.map((option, index) => {
         return {
           name: option.name,
-          position: option.position,
+          position: index++,
           values: {
-            create: option.values.map((value) => {
+            create: option.values.map((value, index) => {
               return {
                 name: value.name,
-                slug: slugify(value.name),
-                position: value.position,
+                position: index++,
               };
             }),
           },
@@ -59,4 +58,27 @@ export const createProductInput = (
       }),
     },
   } satisfies Prisma.ProductCreateInput;
+};
+
+export const updateProductInput = (
+  status?: boolean,
+  title?: string,
+  description?: string,
+  collectionIds?: string[],
+) => {
+  return {
+    ...(status && { status }),
+    ...(title && { slug: slugify(title) }),
+    ...(title && { title }),
+    ...(description && { description }),
+    ...(collectionIds && {
+      collections: {
+        set: collectionIds.map((collectionId) => {
+          return {
+            id: collectionId,
+          };
+        }),
+      },
+    }),
+  } satisfies Prisma.ProductUpdateInput;
 };

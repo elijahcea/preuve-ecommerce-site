@@ -3,7 +3,7 @@ import {
   Product,
   ProductVariant,
   SelectedOption,
-  ProductCreateInput,
+  ProductCreateDTO,
 } from "@/src/lib/types";
 import { calculatePriceInDollars } from "../utils";
 import { includeProductAllRelations } from "./prismaTypes";
@@ -103,13 +103,44 @@ export function calculateProductPriceRange(
   };
 }
 
-export function checkHasOnlyDefaultVariant(productInput: ProductCreateInput) {
-  if (productInput.product.options.length > 1) {
+export function checkHasOnlyDefaultVariant(input: ProductCreateDTO) {
+  if (input.options.length > 1) {
     return false;
   } else if (
-    productInput.product.options[0].name === "Title" &&
-    productInput.product.variants[0].optionValues[0].name === "Default Title"
+    input.options[0].name === "Title" &&
+    input.variants[0].optionValues[0].name === "Default Title"
   ) {
     return true;
   } else return false;
+}
+
+export function validateProductCreatePayload(input: ProductCreateDTO) {
+  const { options, variants } = input;
+  if (options.length) {
+    for (const variant of variants) {
+      if (options.length !== variant.optionValues.length)
+        throw new Error(
+          `Product has ${options.length} option but there were ${variant.optionValues.length} provided option values for the variant.`,
+        );
+
+      variant.optionValues.forEach((ov) => {
+        const option = options.find((option) => ov.optionName === option.name);
+        const optionValue = option?.values.find((val) => ov.name === val.name);
+
+        if (!optionValue) {
+          throw new Error(
+            `Option value ${ov.name} does not exist for option ${ov.optionName}`,
+          );
+        }
+
+        const uniqueOptionNames = new Set();
+        if (uniqueOptionNames.has(ov.optionName)) {
+          throw new Error(
+            "Cannot create product variant with more than one value for the same option.",
+          );
+        }
+        uniqueOptionNames.add(ov.optionName);
+      });
+    }
+  }
 }
