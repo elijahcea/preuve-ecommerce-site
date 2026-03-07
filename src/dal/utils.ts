@@ -1,7 +1,11 @@
 import "server-only";
 
-export function calculatePriceInDollars(price: number): number {
+export function calculatePriceInDollars(price: number) {
   return price / 100;
+}
+
+export function convertPriceForDb(price: number) {
+  return price * 100;
 }
 
 export function slugify(str: string) {
