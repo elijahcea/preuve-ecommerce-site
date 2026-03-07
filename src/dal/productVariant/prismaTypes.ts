@@ -1,5 +1,8 @@
 import { Prisma } from "@/src/generated/prisma/client";
-import { ProductOption, VariantOptionValueCreateInput } from "@/src/lib/types";
+import {
+  VariantOptionValueCreateInput,
+  VariantOptionValueUpdateDTO,
+} from "@/src/lib/types";
 
 export const includeProductVariantWithOptionValues = {
   selectedValues: {
@@ -11,7 +14,6 @@ export const includeProductVariantWithOptionValues = {
 
 export const createProductVariantInput = (
   productId: string,
-  productOptions: ProductOption[],
   sku: string | null,
   price: number,
   inventoryQuantity: number,
@@ -27,11 +29,31 @@ export const createProductVariantInput = (
     selectedValues: {
       connect: optionValues.map((value) => {
         return {
-          id: productOptions
-            .find((option) => option.name === value.optionName)
-            ?.values.find((v) => v.name === value.name)?.id,
+          id: value.id,
         };
       }),
     },
   } satisfies Prisma.ProductVariantCreateInput;
+};
+
+export const updateProductVariantInput = (
+  sku?: string | null,
+  price?: number,
+  inventoryQuantity?: number,
+  optionValues?: VariantOptionValueUpdateDTO[],
+) => {
+  return {
+    ...(sku && { sku }),
+    ...(price && { price }),
+    ...(inventoryQuantity && { inventoryQuantity }),
+    ...(optionValues && {
+      optionValues: {
+        connect: optionValues.map((value) => {
+          return {
+            id: value.id,
+          };
+        }),
+      },
+    }),
+  } satisfies Prisma.ProductVariantUpdateInput;
 };

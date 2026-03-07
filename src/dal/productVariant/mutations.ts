@@ -1,33 +1,111 @@
 import prisma from "@/src/lib/prisma";
 import {
   createProductVariantInput,
-  includeProductVariantWithOptionValues,
+  updateProductVariantInput,
 } from "./prismaTypes";
-import { ProductOption, VariantOptionValueCreateInput } from "@/src/lib/types";
-import { formatVariant } from "./utils";
-import { getProduct } from "../product/queries";
+import {
+  ProductVariantCreateInput,
+  ProductVariantUpdateInput,
+} from "@/src/lib/types";
+import { convertPriceForDb } from "../utils";
+import {
+  assignIdsToOptionValues,
+  checkIfVariantCombinationsAreUnique,
+  validateVariantPayload,
+} from "./utils";
 
-export async function createProductVariant(
-  productId: string,
-  productOptions: ProductOption[],
-  sku: string | null,
-  price: number,
-  inventoryQuantity: number,
-  variantOptionValues: VariantOptionValueCreateInput[],
-) {
-  const product = await getProduct({ id: productId });
-  if (!product) throw new Error(`Product with ID: ${productId} does not exist`);
+export async function createProductVariant(input: ProductVariantCreateInput) {
+  const { productId, sku, price, inventoryQuantity, optionValues } = input;
+  if (!productId)
+    throw new Error(`Please provide a product Id to update product variants.`);
 
-  const newVariant = await prisma.productVariant.create({
-    data: createProductVariantInput(
-      productId,
-      productOptions,
-      sku,
-      price,
-      inventoryQuantity,
-      variantOptionValues,
-    ),
-    include: includeProductVariantWithOptionValues,
+  const options = await prisma.productOption.findMany({
+    where: { productId },
+    include: { values: true },
   });
-  return formatVariant(product.title, product.slug, newVariant);
+
+  validateVariantPayload(input, options);
+
+  const optionValuesWithIds = assignIdsToOptionValues(optionValues, options);
+
+  const newVariant = await prisma.$transaction(async (tx) => {
+    const variant = await tx.productVariant.create({
+      data: createProductVariantInput(
+        productId,
+        sku,
+        convertPriceForDb(price),
+        inventoryQuantity,
+        optionValuesWithIds,
+      ),
+    });
+
+    const updatedVariants = await tx.productVariant.findMany({
+      where: {
+        productId,
+      },
+      include: { selectedValues: true },
+    });
+
+    checkIfVariantCombinationsAreUnique(updatedVariants);
+
+    return variant;
+  });
+
+  return newVariant;
+}
+
+export async function updateProductVariant(input: ProductVariantUpdateInput) {
+  const { productId, sku, price, inventoryQuantity, optionValues } = input;
+  if (!productId)
+    throw new Error(`Please provide a product Id to update product variants.`);
+
+  const options = await prisma.productOption.findMany({
+    where: { productId },
+    include: { values: true },
+  });
+
+  validateVariantPayload(input, options);
+
+  const optionValuesWithIds = optionValues
+    ? assignIdsToOptionValues(optionValues, options)
+    : undefined;
+
+  const updatedVariant = await prisma.$transaction(async (tx) => {
+    const variant = await tx.productVariant.update({
+      where: { id: input.id },
+      data: updateProductVariantInput(
+        sku,
+        price,
+        inventoryQuantity,
+        optionValuesWithIds,
+      ),
+    });
+
+    const updatedVariants = await tx.productVariant.findMany({
+      where: {
+        productId,
+      },
+      include: { selectedValues: true },
+    });
+
+    checkIfVariantCombinationsAreUnique(updatedVariants);
+
+    return variant;
+  });
+
+  return updatedVariant;
+}
+
+export async function deleteProductVariant(
+  productId: string,
+  variantId: string,
+) {
+  if (!productId)
+    throw new Error(`Please provide a product Id to delete product variants.`);
+
+  const deletedVariant = await prisma.productVariant.delete({
+    where: { productId, id: variantId },
+  });
+
+  return deletedVariant;
 }
