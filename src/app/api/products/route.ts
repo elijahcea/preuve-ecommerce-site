@@ -1,12 +1,11 @@
 import { getAllProducts } from "@/src/dal/product/queries";
 import { createProduct } from "@/src/dal/product/mutations";
 import {
-  ProductCreateInput,
   GetProductsResponse,
   CreateProductResponse,
+  ProductCreateDTO,
 } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
-import { createProductVariant } from "@/src/dal/productVariant/mutations";
 
 export async function GET(
   request: NextRequest,
@@ -34,9 +33,8 @@ export async function POST(
   request: NextRequest,
 ): Promise<NextResponse<CreateProductResponse>> {
   try {
-    const body = await request.json();
-    const { product }: ProductCreateInput = body;
-    const newProduct = await createProduct({ product });
+    const body: ProductCreateDTO = await request.json();
+    const newProduct = await createProduct(body);
 
     const response = {
       product: newProduct,
@@ -47,6 +45,7 @@ export async function POST(
       headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
+    console.log(e);
     return new NextResponse(JSON.stringify(`Internal server error: ${e}`), {
       status: 500,
       headers: { "Content-Type": "application/json" },
