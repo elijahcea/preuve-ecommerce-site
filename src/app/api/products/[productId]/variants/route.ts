@@ -21,7 +21,7 @@ export async function POST(
 
     const updatedProduct = await getProduct({ id: (await params).productId });
 
-    if (updatedProduct === null)
+    if (!updatedProduct)
       return new NextResponse(JSON.stringify("Product not found"), {
         status: 404,
         headers: { "Content-Type": "application/json" },

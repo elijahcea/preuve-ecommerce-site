@@ -1,10 +1,6 @@
 import { createOption } from "@/src/dal/option/mutations";
 import { getProduct } from "@/src/dal/product/queries";
-import {
-  CreateOptionResponse,
-  OptionCreateDTO,
-  OptionCreateInput,
-} from "@/src/lib/types";
+import { CreateOptionResponse, OptionCreateDTO } from "@/src/lib/types";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -22,7 +18,7 @@ export async function POST(
 
     const updatedProduct = await getProduct({ id: (await params).productId });
 
-    if (updatedProduct === null)
+    if (!updatedProduct)
       return new NextResponse(JSON.stringify("Product not found"), {
         status: 404,
         headers: { "Content-Type": "application/json" },

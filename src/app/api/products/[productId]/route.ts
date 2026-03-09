@@ -16,7 +16,7 @@ export async function GET(
 
     const product = await getProduct({ id });
 
-    if (product === null)
+    if (!product)
       return new NextResponse(JSON.stringify("Product not found"), {
         status: 404,
         headers: { "Content-Type": "application/json" },
