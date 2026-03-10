@@ -34,7 +34,7 @@ export default function NavBar({
                 <PopoverPanel
                   transition
                   anchor={{ to: "top start", gap: "4px" }}
-                  className="w-full bg-background text-sm/6 border-b border-b-[#e5e5e5] shadow-md transition duration-200 ease-in-out data-open:z-50 data-closed:-translate-y-1 data-closed:opacity-0"
+                  className="w-full bg-background text-sm/6 border-b border-b-[#e5e5e5] shadow-md transition duration-200 ease-in-out data-closed:-translate-y-1 data-closed:opacity-0"
                 >
                   <div className="flex flex-col items-start gap-3 p-4">
                     {collections.map((collection) => (
