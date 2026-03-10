@@ -15,7 +15,7 @@ export default function ProductCard({
           {product.featuredImage?.url ? (
             <Image
               src={product.featuredImage.url}
-              alt={product.featuredImage.altText || product.name}
+              alt={product.featuredImage.altText || product.title}
               height={750}
               width={600}
               style={{ width: "100%", height: "auto" }}
@@ -24,7 +24,7 @@ export default function ProductCard({
             <></>
           )}
           <div className="flex justify-between text-sm">
-            <p>{product.name}</p>
+            <p>{product.title}</p>
             <Price amount={product.priceRange.minVariantPrice} />
           </div>
         </div>
