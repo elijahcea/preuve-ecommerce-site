@@ -1,5 +1,3 @@
-import "server-only";
-
 export function calculatePriceInDollars(price: number) {
   return price / 100;
 }
