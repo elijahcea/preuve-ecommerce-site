@@ -1,3 +1,4 @@
+import { slugify } from "@/src/dal/utils";
 import prisma from "@/src/lib/prisma";
 
 async function main() {
@@ -64,10 +65,10 @@ async function main() {
             position: 1,
             values: {
               create: [
-                { name: "Small", slug: "s", position: 1 },
-                { name: "Medium", slug: "m", position: 2 },
-                { name: "Large", slug: "l", position: 3 },
-                { name: "X-Large", slug: "xl", position: 4 },
+                { name: "Small", position: 1 },
+                { name: "Medium", position: 2 },
+                { name: "Large", position: 3 },
+                { name: "X-Large", position: 4 },
               ],
             },
           },
@@ -76,9 +77,9 @@ async function main() {
             position: 2,
             values: {
               create: [
-                { name: "White", slug: "white", position: 1 },
-                { name: "Black", slug: "black", position: 2 },
-                { name: "Navy", slug: "navy", position: 3 },
+                { name: "White", position: 1 },
+                { name: "Black", position: 2 },
+                { name: "Navy", position: 3 },
               ],
             },
           },
@@ -107,7 +108,7 @@ async function main() {
     for (const color of colors) {
       const variant = await prisma.productVariant.create({
         data: {
-          sku: `TSHIRT-${size.slug.toUpperCase()}-${color.slug.toUpperCase()}`,
+          sku: `TSHIRT-${size.name.toUpperCase()}-${color.name.toUpperCase()}`,
           price: 3000,
           inventoryQuantity: Math.floor(Math.random() * 100) + 10,
           //imageUrl: `https://example.com/images/tshirt-${color.slug}.jpg`,
@@ -144,10 +145,10 @@ async function main() {
             position: 1,
             values: {
               create: [
-                { name: "30", slug: "30", position: 1 },
-                { name: "32", slug: "32", position: 2 },
-                { name: "34", slug: "34", position: 3 },
-                { name: "36", slug: "36", position: 4 },
+                { name: "30", position: 1 },
+                { name: "32", position: 2 },
+                { name: "34", position: 3 },
+                { name: "36", position: 4 },
               ],
             },
           },
@@ -156,9 +157,9 @@ async function main() {
             position: 2,
             values: {
               create: [
-                { name: "30", slug: "30", position: 1 },
-                { name: "32", slug: "32", position: 2 },
-                { name: "34", slug: "34", position: 3 },
+                { name: "30", position: 1 },
+                { name: "32", position: 2 },
+                { name: "34", position: 3 },
               ],
             },
           },
@@ -167,8 +168,8 @@ async function main() {
             position: 3,
             values: {
               create: [
-                { name: "Light Blue", slug: "light-blue", position: 1 },
-                { name: "Dark Blue", slug: "dark-blue", position: 2 },
+                { name: "Light Blue", position: 1 },
+                { name: "Dark Blue", position: 2 },
               ],
             },
           },
@@ -199,7 +200,7 @@ async function main() {
       for (const wash of washes) {
         const variant = await prisma.productVariant.create({
           data: {
-            sku: `JEANS-${waist.slug}-${length.slug}-${wash.slug.toUpperCase()}`,
+            sku: `JEANS-${waist.name}-${length.name}-${wash.name.toUpperCase()}`,
             price: 8000,
             inventoryQuantity: Math.floor(Math.random() * 50) + 5,
             //imageUrl: `https://example.com/images/jeans-${wash.slug}.jpg`,
@@ -236,10 +237,10 @@ async function main() {
             position: 1,
             values: {
               create: [
-                { name: "US 8", slug: "us-8", position: 1 },
-                { name: "US 9", slug: "us-9", position: 2 },
-                { name: "US 10", slug: "us-10", position: 3 },
-                { name: "US 11", slug: "us-11", position: 4 },
+                { name: "US 8", position: 1 },
+                { name: "US 9", position: 2 },
+                { name: "US 10", position: 3 },
+                { name: "US 11", position: 4 },
               ],
             },
           },
@@ -262,7 +263,7 @@ async function main() {
   for (const size of shoeSizes) {
     const variant = await prisma.productVariant.create({
       data: {
-        sku: `SNEAKERS-${size.slug.toUpperCase()}`,
+        sku: `SNEAKERS-${size.name.toUpperCase()}`,
         price: 13000,
         inventoryQuantity: Math.floor(Math.random() * 30) + 5,
         //imageUrl: "https://example.com/images/sneakers.jpg",
@@ -276,12 +277,65 @@ async function main() {
     sneakerVariants.push(variant);
   }
 
+  const hat = await prisma.product.create({
+    data: {
+      title: "Striped Crest Logo Hat",
+      slug: slugify("Striped Crest Logo Hat"),
+      status: true,
+      hasOnlyDefaultVariant: true,
+      description: "Green & white striped hat",
+      featuredImageURL:
+        "https://www.aimeleondore.com/cdn/shop/files/SS26AH002_StripedAimv_CrestLogoCap_PineGreen_12_3200x.jpg?v=1771354032",
+      featuredImageAlt: "Green & white striped hat",
+      collections: {
+        connect: [{ id: collections[1].id }, { id: collections[2].id }],
+      },
+      options: {
+        create: [
+          {
+            name: "Default option",
+            position: 1,
+            values: {
+              create: [{ name: "Default value", position: 1 }],
+            },
+          },
+        ],
+      },
+    },
+    include: {
+      options: {
+        include: {
+          values: true,
+        },
+      },
+    },
+  });
+
+  const hatDefaultOption = hat.options.find(
+    (opt) => opt.name === "Default option",
+  )!;
+  const hatDefaultValue = hatDefaultOption.values[0];
+
+  const hatVariant = await prisma.productVariant.create({
+    data: {
+      sku: slugify(hat.title),
+      price: 15000,
+      inventoryQuantity: Math.floor(Math.random() * 30) + 5,
+      //imageUrl: "https://example.com/images/sneakers.jpg",
+      //imageAlt: `Running sneakers size ${size.name}`,
+      productId: hat.id,
+      selectedValues: {
+        connect: [{ id: hatDefaultValue.id }],
+      },
+    },
+  });
+
   console.log("✅ Database seeded successfully!");
   console.log(`
 📊 Summary:
 - Collections: ${collections.length}
-- Products: 3
-- Product Variants: ${tshirtVariants.length + jeansVariants.length + sneakerVariants.length}
+- Products: 4
+- Product Variants: ${tshirtVariants.length + jeansVariants.length + sneakerVariants.length + 1}
   `);
 }
 
