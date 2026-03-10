@@ -44,17 +44,11 @@ export default function AddToCartBtn({
       >
         <span className="flex gap-2 items-center justify-center">
           <ShoppingBagIcon aria-hidden="true" className="size-5" />
-          {!variant ? (
-            "SELECT OPTIONS"
-          ) : variant.inventoryQuantity ? (
-            isPending ? (
-              <LoadingSpinner />
-            ) : (
-              "ADD TO CART"
-            )
-          ) : (
-            "OUT OF STOCK"
-          )}
+          {!variant
+            ? "SELECT OPTIONS"
+            : variant.inventoryQuantity
+              ? "ADD TO CART"
+              : "OUT OF STOCK"}
         </span>
       </button>
       {message && <p>{message}</p>}
