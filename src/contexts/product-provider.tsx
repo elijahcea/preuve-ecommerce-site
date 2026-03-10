@@ -27,7 +27,7 @@ export default function ProductProvider({
   const getInitialState = () => {
     const params: ProductStateType = {};
     for (const [key, value] of searchParams.entries()) {
-      params[key] = value;
+      params[key.toLowerCase()] = value.toLowerCase();
     }
     return params;
   };
