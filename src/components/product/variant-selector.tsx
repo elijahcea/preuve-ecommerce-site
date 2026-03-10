@@ -18,8 +18,8 @@ export default function VariantSelector({
 }) {
   const { state, updateOption, updateURL } = useProductContext();
 
-  if (!options.length) {
-    return null;
+  if (options.length <= 1) {
+    if (!options.length || options[0].values.length <= 1) return;
   }
 
   return (

@@ -11,7 +11,20 @@ export default function ProductDetail({ product }: { product: Product }) {
   const { state } = useProductContext();
 
   const getSelectedVariant = () => {
+    if (!product.options.length) return undefined;
+    if (product.options.length === 1 && product.options[0].values.length <= 1) {
+      return product.variants.find((variant) => {
+        return variant.selectedOptions.every((selectedOption) => {
+          const optionValue = product.options[0].values.find(
+            (val) => selectedOption.optionValueId === val.id,
+          );
+          return optionValue;
+        });
+      });
+    }
     return product.variants.find((variant) => {
+      if (variant.selectedOptions.length !== product.options.length)
+        return undefined;
       return variant.selectedOptions.every((selectedOption) => {
         const stateValue = state[selectedOption.name.toLowerCase()];
         return stateValue === selectedOption.value.toLowerCase();
