@@ -1,4 +1,5 @@
 import { deleteProduct, updateProduct } from "@/src/dal/product/mutations";
+import { Prisma } from "@/src/generated/prisma/client";
 import { getProduct } from "@/src/dal/product/queries";
 import {
   GetProductResponse,
@@ -72,10 +73,10 @@ export async function DELETE(
   { params }: { params: Promise<{ productId: string }> },
 ) {
   try {
-    const deletedProduct = await deleteProduct((await params).productId);
+    const deletedProductId = await deleteProduct((await params).productId);
 
     const response = {
-      option: deletedProduct,
+      deletedProductId,
     };
 
     return new NextResponse(JSON.stringify(response), {
@@ -84,6 +85,14 @@ export async function DELETE(
     });
   } catch (e) {
     console.log(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        throw new Error(
+          `Product with ID ${(await params).productId} was not found.`,
+        );
+      }
+    }
+
     return new NextResponse(JSON.stringify(`Internal server error: ${e}`), {
       status: 500,
       headers: { "Content-Type": "application/json" },
