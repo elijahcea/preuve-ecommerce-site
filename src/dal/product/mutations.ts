@@ -87,14 +87,13 @@ export async function updateProduct(
   return formatProduct(updatedProduct);
 }
 
-export async function deleteProduct(productId: string): Promise<Product> {
+export async function deleteProduct(productId: string): Promise<string> {
   if (!productId)
     throw new Error("Please provide a product Id to delete product.");
 
   const deletedProduct = await prisma.product.delete({
     where: { id: productId },
-    include: includeProductAllRelations,
   });
 
-  return formatProduct(deletedProduct);
+  return deletedProduct.id;
 }
