@@ -10,7 +10,9 @@ export default function proxy(request: NextRequest) {
 
   // Define allowed origins dynamically
   const allowedOrigins =
-    process.env.NODE_ENV === "production" ? [] : ["http://localhost:5173"];
+    process.env.NODE_ENV === "production"
+      ? ["https://admin.preuvenewyork.com"]
+      : ["http://localhost:5173"];
 
   const isAllowedOrigin = origin && allowedOrigins.includes(origin);
 
