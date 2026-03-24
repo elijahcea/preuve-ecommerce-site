@@ -76,6 +76,26 @@ export function formatProduct(
   };
 }
 
+export function formatProductPreview(
+  product: Prisma.ProductGetPayload<{ include: { variants: true } }>,
+) {
+  return {
+    id: product.id,
+    slug: product.slug,
+    status: product.status,
+    title: product.title,
+    priceRange: calculateProductPriceRange(product.variants),
+    description: product.description,
+    hasOnlyDefaultVariant: product.hasOnlyDefaultVariant,
+    featuredImage: {
+      url: product.featuredImageURL,
+      altText: product.featuredImageAlt,
+    },
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  };
+}
+
 export function createProductHref(
   productSlug: string,
   selectedOptions: SelectedOption[],

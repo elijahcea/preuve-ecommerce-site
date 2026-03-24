@@ -1,9 +1,8 @@
 import "server-only";
 
 import prisma from "@/src/lib/prisma";
-import { formatProduct } from "./utils";
+import { formatProduct, formatProductPreview } from "./utils";
 import { Product, ProductPreview } from "@/src/lib/types";
-import { calculateProductPriceRange } from "./utils";
 import { includeProductAllRelations } from "./prismaTypes";
 
 export async function getAllProducts(): Promise<ProductPreview[] | null> {
@@ -15,23 +14,7 @@ export async function getAllProducts(): Promise<ProductPreview[] | null> {
     });
     if (!products) return null;
 
-    return products.map((product) => {
-      return {
-        id: product.id,
-        slug: product.slug,
-        status: product.status,
-        title: product.title,
-        priceRange: calculateProductPriceRange(product.variants),
-        description: product.description,
-        hasOnlyDefaultVariant: product.hasOnlyDefaultVariant,
-        featuredImage: {
-          url: product.featuredImageURL,
-          altText: product.featuredImageAlt,
-        },
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-      };
-    });
+    return products.map((product) => formatProductPreview(product));
   } catch (e) {
     throw e;
   }

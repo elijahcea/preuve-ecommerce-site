@@ -1,5 +1,6 @@
 import prisma from "@/src/lib/prisma";
 import { Collection, CollectionPreview } from "@/src/lib/types";
+import { formatProductPreview } from "../product/utils";
 
 export async function getAllCollections(): Promise<CollectionPreview[] | null> {
   try {
@@ -19,12 +20,24 @@ export async function getCollection(id: string): Promise<Collection | null> {
         id: id,
       },
       include: {
-        products: true,
+        products: {
+          include: { variants: true },
+        },
       },
     });
     if (!collection) return null;
 
-    return collection;
+    const productPreviews = collection.products.map((product) =>
+      formatProductPreview(product),
+    );
+
+    return {
+      id: collection.id,
+      slug: collection.slug,
+      title: collection.title,
+      description: collection.description,
+      products: productPreviews,
+    };
   } catch (e) {
     throw e;
   }
