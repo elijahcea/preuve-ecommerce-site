@@ -170,7 +170,6 @@ export type OptionUpdateInput = OptionUpdateDTO & {
 export type OptionValueUpdateInput = {
   id?: string;
   name: string;
-  optionName: string;
 };
 
 export interface ProductVariantUpdateDTO {
