@@ -24,12 +24,12 @@ export async function validateToken(token: string) {
       new URL(`https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`),
     );
     const { payload } = await jwtVerify(token, jwks, {
-      issuer: process.env.AUTH0_DOMAIN,
+      issuer: `https://${process.env.AUTH0_DOMAIN}/`,
       audience: process.env.AUTH0_API_AUDIENCE,
     });
     return payload;
   } catch (e) {
-    console.error("JWT Validation Error:", error);
+    console.error("JWT Validation Error:", e);
   }
 }
 
