@@ -7,6 +7,7 @@ import {
   ProductUpdateDTO,
 } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
+import { hasPermissions, validateToken } from "@/src/dal/utils";
 
 export async function GET(
   request: NextRequest,
@@ -44,6 +45,52 @@ export async function PUT(
   { params }: { params: Promise<{ productId: string }> },
 ): Promise<NextResponse<UpdateProductResponse>> {
   try {
+    const authHeader = request.headers.get("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "No token provided",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const token = authHeader.split(" ")[1];
+    const authPayload = await validateToken(token);
+
+    if (!authPayload) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Invalid token",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const isAuthorized = hasPermissions(
+      authPayload.permissions as Array<string>,
+      "update:products",
+    );
+
+    if (!isAuthorized) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Unauthorized",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const body: ProductUpdateDTO = await request.json();
 
     const updatedProduct = await updateProduct({
@@ -73,6 +120,52 @@ export async function DELETE(
   { params }: { params: Promise<{ productId: string }> },
 ) {
   try {
+    const authHeader = request.headers.get("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "No token provided",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const token = authHeader.split(" ")[1];
+    const authPayload = await validateToken(token);
+
+    if (!authPayload) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Invalid token",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const isAuthorized = hasPermissions(
+      authPayload.permissions as Array<string>,
+      "delete:products",
+    );
+
+    if (!isAuthorized) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Unauthorized",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const deletedProductId = await deleteProduct((await params).productId);
 
     const response = {
