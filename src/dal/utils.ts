@@ -1,4 +1,3 @@
-import { error } from "node:console";
 import { jwtVerify, createRemoteJWKSet } from "jose";
 
 export function calculatePriceInDollars(price: number) {
