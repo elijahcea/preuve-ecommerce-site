@@ -93,6 +93,52 @@ export async function DELETE(
   { params }: { params: Promise<{ productId: string; optionId: string }> },
 ) {
   try {
+    const authHeader = request.headers.get("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "No token provided",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const token = authHeader.split(" ")[1];
+    const authPayload = await validateToken(token);
+
+    if (!authPayload) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Invalid token",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const isAuthorized = hasPermissions(
+      authPayload.permissions as Array<string>,
+      "delete:options",
+    );
+
+    if (!isAuthorized) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Unauthorized",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const deletedOption = await deleteOption(
       (await params).productId,
       (await params).optionId,
