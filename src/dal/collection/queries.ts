@@ -7,7 +7,14 @@ export async function getAllCollections(): Promise<CollectionPreview[] | null> {
     const collections = await prisma.collection.findMany();
     if (!collections) return null;
 
-    return collections;
+    return collections.map((c) => {
+      return {
+        id: c.id,
+        title: c.title,
+        slug: c.slug,
+        description: c.description,
+      };
+    });
   } catch (e) {
     throw e;
   }
