@@ -28,12 +28,12 @@ export default async function Search({
       <SearchBar placeholder="Search our store" />
       <p>Results {`(${results?.length || 0})`}</p>
       <Suspense fallback={<CollectionPageSkeleton />}>
-        <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
+        {/* <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
           <div className="flex gap-2">
             <button className="cursor-pointer">Sort</button>
             <button className="cursor-pointer">Filter</button>
           </div>
-        </div>
+        </div> */}
         <ul className="grid grid-cols-4 auto-rows-auto gap-7 pt-3 pb-3 pl-6 pr-6">
           {results?.map((product) => {
             return <ProductCard key={product.id} product={product} />;

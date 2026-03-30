@@ -27,10 +27,10 @@ export default async function CollectionPage({
               <></>
             )}
           </div>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <button className="cursor-pointer">Sort</button>
             <button className="cursor-pointer">Filter</button>
-          </div>
+          </div> */}
         </div>
         <ul className="grid grid-cols-4 auto-rows-auto gap-7 pt-3 pb-3 pl-6 pr-6">
           {formattedProducts.map((product) => {
