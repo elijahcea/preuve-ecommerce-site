@@ -52,7 +52,7 @@ export const updateProductVariantInput = (
     ...(inventoryQuantity && { inventoryQuantity }),
     ...(selectedValues && {
       selectedValues: {
-        connect: selectedValues.map((value) => {
+        set: selectedValues.map((value) => {
           return {
             id: value.id,
           };
