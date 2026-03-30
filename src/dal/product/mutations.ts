@@ -49,6 +49,7 @@ export async function createProduct(input: ProductCreateDTO): Promise<Product> {
         const newVariant = await tx.productVariant.create({
           data: createProductVariantInput(
             newProduct.id,
+            variant.title,
             variant.sku,
             variant.price,
             variant.inventoryQuantity,

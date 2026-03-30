@@ -30,6 +30,7 @@ export function formatVariant(
 
   return {
     id: variant.id,
+    title: variant.title,
     sku: variant.sku,
     productTitle,
     price: calculatePriceInDollars(variant.price),

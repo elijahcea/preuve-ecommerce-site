@@ -75,6 +75,7 @@ model ProductOptionValue {
 
 model ProductVariant {
   id                String  @id @default(cuid())
+  title             String
   price             Int
   inventoryQuantity Int
   sku               String?

@@ -15,6 +15,7 @@ export type ProductOptionValue = {
 
 export type ProductVariant = {
   id: string;
+  title: string;
   sku: string | null;
   productTitle: string;
   price: number;
@@ -120,6 +121,7 @@ export type OptionValueCreateInput = {
 };
 
 export interface ProductVariantCreateDTO {
+  title: string;
   sku: string | null;
   price: number;
   inventoryQuantity: number;
@@ -168,6 +170,7 @@ export type OptionValueUpdateInput = {
 };
 
 export interface ProductVariantUpdateDTO {
+  title?: string;
   sku?: string | null;
   price?: number;
   inventoryQuantity?: number;

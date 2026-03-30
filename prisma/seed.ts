@@ -108,6 +108,7 @@ async function main() {
     for (const color of colors) {
       const variant = await prisma.productVariant.create({
         data: {
+          title: `${size.name} / ${color.name}`,
           sku: `TSHIRT-${size.name.toUpperCase()}-${color.name.toUpperCase()}`,
           price: 3000,
           inventoryQuantity: Math.floor(Math.random() * 100) + 10,
@@ -200,6 +201,7 @@ async function main() {
       for (const wash of washes) {
         const variant = await prisma.productVariant.create({
           data: {
+            title: `${waist.name} / ${length.name} / ${wash.name}`,
             sku: `JEANS-${waist.name}-${length.name}-${wash.name.toUpperCase()}`,
             price: 8000,
             inventoryQuantity: Math.floor(Math.random() * 50) + 5,
@@ -263,6 +265,7 @@ async function main() {
   for (const size of shoeSizes) {
     const variant = await prisma.productVariant.create({
       data: {
+        title: `${size.name}`,
         sku: `SNEAKERS-${size.name.toUpperCase()}`,
         price: 13000,
         inventoryQuantity: Math.floor(Math.random() * 30) + 5,
@@ -318,6 +321,7 @@ async function main() {
 
   const hatVariant = await prisma.productVariant.create({
     data: {
+      title: "Default variant",
       sku: slugify(hat.title),
       price: 15000,
       inventoryQuantity: Math.floor(Math.random() * 30) + 5,

@@ -14,6 +14,7 @@ export const includeProductVariantWithOptionValues = {
 
 export const createProductVariantInput = (
   productId: string,
+  title: string,
   sku: string | null,
   price: number,
   inventoryQuantity: number,
@@ -23,6 +24,7 @@ export const createProductVariantInput = (
     product: {
       connect: { id: productId },
     },
+    title,
     sku,
     price,
     inventoryQuantity,
@@ -37,12 +39,14 @@ export const createProductVariantInput = (
 };
 
 export const updateProductVariantInput = (
+  title?: string,
   sku?: string | null,
   price?: number,
   inventoryQuantity?: number,
   selectedValues?: ProductOptionValue[],
 ) => {
   return {
+    ...(title && { title }),
     ...(sku && { sku }),
     ...(price && { price }),
     ...(inventoryQuantity && { inventoryQuantity }),
