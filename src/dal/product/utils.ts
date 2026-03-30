@@ -2,8 +2,8 @@ import {
   ProductOption,
   Product,
   ProductVariant,
-  SelectedOption,
   ProductCreateDTO,
+  ProductOptionValue,
 } from "@/src/lib/types";
 import { calculatePriceInDollars } from "../utils";
 import { includeProductAllRelations } from "./prismaTypes";
@@ -23,6 +23,7 @@ export function formatProduct(
         id: value.id,
         position: value.position,
         name: value.name,
+        optionName: option.name,
         optionId: value.productOptionId,
       })),
     };
@@ -30,11 +31,13 @@ export function formatProduct(
 
   const transformedVariants: ProductVariant[] = product.variants.map(
     (variant) => {
-      const selectedOptions: SelectedOption[] = variant.selectedValues.map(
+      const selectedValues: ProductOptionValue[] = variant.selectedValues.map(
         (value) => ({
-          name: value.productOption.name,
-          value: value.name,
-          optionValueId: value.id,
+          id: value.id,
+          position: value.position,
+          name: value.name,
+          optionName: value.productOption.name,
+          optionId: value.productOptionId,
         }),
       );
 
@@ -48,10 +51,10 @@ export function formatProduct(
           url: variant.imageUrl,
           altText: variant.imageAlt,
         },
-        href: createProductHref(product.slug, selectedOptions),
+        href: createProductHref(product.slug, selectedValues),
         createdAt: variant.createdAt,
         updatedAt: variant.updatedAt,
-        selectedOptions,
+        selectedValues,
       };
     },
   );
@@ -98,14 +101,14 @@ export function formatProductPreview(
 
 export function createProductHref(
   productSlug: string,
-  selectedOptions: SelectedOption[],
+  selectedValues: ProductOptionValue[],
 ) {
   const searchParams = new URLSearchParams();
-  for (const so of selectedOptions) {
-    searchParams.set(so.name.toLowerCase(), so.value.toLowerCase());
+  for (const ov of selectedValues) {
+    searchParams.set(ov.optionName.toLowerCase(), ov.name.toLowerCase());
   }
   const queryString =
-    selectedOptions.length === 0 ? "" : "?" + searchParams.toString();
+    selectedValues.length === 0 ? "" : "?" + searchParams.toString();
 
   return `/products/${productSlug}` + queryString;
 }
@@ -128,7 +131,7 @@ export function checkHasOnlyDefaultVariant(input: ProductCreateDTO) {
     return false;
   } else if (
     input.options[0].name === "Title" &&
-    input.variants[0].optionValues[0].name === "Default Title"
+    input.variants[0].selectedValues[0].name === "Default Title"
   ) {
     return true;
   } else return false;
@@ -138,12 +141,12 @@ export function validateProductCreatePayload(input: ProductCreateDTO) {
   const { options, variants } = input;
   if (options.length) {
     for (const variant of variants) {
-      if (options.length !== variant.optionValues.length)
+      if (options.length !== variant.selectedValues.length)
         throw new Error(
-          `Product has ${options.length} option but there were ${variant.optionValues.length} provided option values for the variant.`,
+          `Product has ${options.length} option but there were ${variant.selectedValues.length} provided option values for the variant.`,
         );
 
-      variant.optionValues.forEach((ov) => {
+      variant.selectedValues.forEach((ov) => {
         const option = options.find((option) => ov.optionName === option.name);
         const optionValue = option?.values.find((val) => ov.name === val.name);
 

@@ -14,20 +14,20 @@ export default function ProductDetail({ product }: { product: Product }) {
     if (!product.options.length) return undefined;
     if (product.options.length === 1 && product.options[0].values.length <= 1) {
       return product.variants.find((variant) => {
-        return variant.selectedOptions.every((selectedOption) => {
+        return variant.selectedValues.every((value) => {
           const optionValue = product.options[0].values.find(
-            (val) => selectedOption.optionValueId === val.id,
+            (val) => value.id === val.id,
           );
           return optionValue;
         });
       });
     }
     return product.variants.find((variant) => {
-      if (variant.selectedOptions.length !== product.options.length)
+      if (variant.selectedValues.length !== product.options.length)
         return undefined;
-      return variant.selectedOptions.every((selectedOption) => {
-        const stateValue = state[selectedOption.name.toLowerCase()];
-        return stateValue === selectedOption.value.toLowerCase();
+      return variant.selectedValues.every((val) => {
+        const stateValue = state[val.optionName.toLowerCase()];
+        return stateValue === val.name.toLowerCase();
       });
     });
   };

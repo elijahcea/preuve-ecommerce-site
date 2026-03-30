@@ -1,9 +1,9 @@
 import { Prisma } from "@/src/generated/prisma/client";
 import {
+  ProductOptionValue,
   ProductVariant,
   ProductVariantCreateDTO,
   ProductVariantUpdateDTO,
-  SelectedOption,
   VariantOptionValueCreateDTO,
 } from "@/src/lib/types";
 import { calculatePriceInDollars } from "../utils";
@@ -18,11 +18,13 @@ export function formatVariant(
     include: typeof includeProductVariantWithOptionValues;
   }>,
 ): ProductVariant {
-  const selectedOptions: SelectedOption[] = variant.selectedValues.map(
+  const selectedValues: ProductOptionValue[] = variant.selectedValues.map(
     (value) => ({
-      name: value.productOption.name,
-      value: value.name,
-      optionValueId: value.id,
+      id: value.id,
+      position: value.position,
+      name: value.name,
+      optionName: value.productOption.name,
+      optionId: value.productOptionId,
     }),
   );
 
@@ -36,10 +38,10 @@ export function formatVariant(
       url: variant.imageUrl,
       altText: variant.imageAlt || "",
     },
-    href: createProductHref(productSlug, selectedOptions),
+    href: createProductHref(productSlug, selectedValues),
     createdAt: variant.createdAt,
     updatedAt: variant.updatedAt,
-    selectedOptions,
+    selectedValues,
   };
 }
 
@@ -69,16 +71,16 @@ export function validateVariantPayload(
   input: ProductVariantCreateDTO | ProductVariantUpdateDTO,
   options: Prisma.ProductOptionGetPayload<{ include: { values: true } }>[],
 ) {
-  const { optionValues } = input;
+  const { selectedValues } = input;
 
-  if (optionValues?.length) {
-    if (options.length !== optionValues.length)
+  if (selectedValues?.length) {
+    if (options.length !== selectedValues.length)
       throw new Error(
-        `Product has ${options.length} option but there were ${optionValues.length} provided option values for the variant.`,
+        `Product has ${options.length} option but there were ${selectedValues.length} provided option values for the variant.`,
       );
 
     const uniqueOptionNames = new Set();
-    for (const ov of optionValues) {
+    for (const ov of selectedValues) {
       if (uniqueOptionNames.has(ov.optionName)) {
         throw new Error(
           "Cannot create product variant with more than one value for the same option.",

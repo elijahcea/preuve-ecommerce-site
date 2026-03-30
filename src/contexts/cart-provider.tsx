@@ -48,7 +48,7 @@ function createNewItem(variant: ProductVariant, product: Product): CartItem {
       price: variant.price,
       image: variant.image ?? product.featuredImage,
       href: variant.href,
-      selectedOptions: variant.selectedOptions,
+      selectedValues: variant.selectedValues,
     },
   };
 }

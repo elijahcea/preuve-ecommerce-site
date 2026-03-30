@@ -2,7 +2,7 @@ import "server-only";
 
 import prisma from "@/src/lib/prisma";
 import { Prisma } from "@/src/generated/prisma/client";
-import { Cart, CartItem, SelectedOption } from "@/src/lib/types";
+import { Cart, CartItem, ProductOptionValue } from "@/src/lib/types";
 import { cookies } from "next/headers";
 import { calculateCartTotals, calculateItemCost } from "./utils";
 import { calculatePriceInDollars } from "@/src/dal/utils";
@@ -54,12 +54,14 @@ export async function getCart(): Promise<Cart | undefined> {
 
     const cartItems: CartItem[] = res.items.map((item) => {
       const price = calculatePriceInDollars(item.productVariant.price);
-      const selectedOptions: SelectedOption[] =
+      const selectedValues: ProductOptionValue[] =
         item.productVariant.selectedValues.map((value) => {
           return {
-            name: value.productOption.name,
-            value: value.name,
-            optionValueId: value.id,
+            id: value.id,
+            position: value.position,
+            name: value.name,
+            optionName: value.productOption.name,
+            optionId: value.productOptionId,
           };
         });
 
@@ -78,9 +80,9 @@ export async function getCart(): Promise<Cart | undefined> {
           },
           href: createProductHref(
             item.productVariant.product.slug,
-            selectedOptions,
+            selectedValues,
           ),
-          selectedOptions,
+          selectedValues,
         },
       };
     });
