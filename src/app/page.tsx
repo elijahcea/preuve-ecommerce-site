@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 export default function Home() {
   const images = [
@@ -9,18 +8,11 @@ export default function Home() {
   ];
   return (
     <div className="m-auto columns-3 p-5">
-      {images.map((image) => {
+      {images.map((image, idx) => {
         return (
-          <Link key={image} href="/collections/shop-all">
-            <div className="relative h-auto">
-              <Image
-                src={image}
-                alt="Homepage photo"
-                height={649}
-                width={432}
-              />
-            </div>
-          </Link>
+          <div key={idx} className="relative h-auto">
+            <Image src={image} alt="Homepage photo" height={649} width={432} />
+          </div>
         );
       })}
     </div>
