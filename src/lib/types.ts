@@ -9,13 +9,8 @@ export type ProductOptionValue = {
   id: string;
   position: number;
   name: string;
+  optionName: string;
   optionId: string;
-};
-
-export type SelectedOption = {
-  name: string;
-  value: string;
-  optionValueId: string;
 };
 
 export type ProductVariant = {
@@ -29,7 +24,7 @@ export type ProductVariant = {
   createdAt: Date;
   updatedAt: Date;
 
-  selectedOptions: SelectedOption[];
+  selectedValues: ProductOptionValue[];
 };
 
 export type Product = {
@@ -77,7 +72,7 @@ export type Merchandise = {
   price: number;
   image: Image | null;
   href: string;
-  selectedOptions: SelectedOption[];
+  selectedValues: ProductOptionValue[];
 };
 
 export type Image = {
@@ -129,7 +124,7 @@ export interface ProductVariantCreateDTO {
   price: number;
   inventoryQuantity: number;
 
-  optionValues: VariantOptionValueCreateDTO[];
+  selectedValues: VariantOptionValueCreateDTO[];
 }
 
 export type ProductVariantCreateInput = ProductVariantCreateDTO & {
@@ -177,19 +172,13 @@ export interface ProductVariantUpdateDTO {
   price?: number;
   inventoryQuantity?: number;
 
-  optionValues?: VariantOptionValueUpdateDTO[];
+  selectedValues?: ProductOptionValue[];
 }
 
 export type ProductVariantUpdateInput = ProductVariantUpdateDTO & {
   productId: string;
   id: string;
 };
-
-export interface VariantOptionValueUpdateDTO {
-  id: string;
-  name: string;
-  optionName: string;
-}
 
 // API Response Types
 interface ProductResponses {
