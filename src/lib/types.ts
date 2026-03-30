@@ -183,6 +183,22 @@ export type ProductVariantUpdateInput = ProductVariantUpdateDTO & {
   id: string;
 };
 
+export type CollectionCreateDTO = {
+  title: string;
+  description: string;
+  productIds: string[];
+};
+
+export type CollectionUpdateDTO = {
+  title?: string;
+  description?: string;
+  productIds?: string[];
+};
+
+export type CollectionUpdateInput = CollectionUpdateDTO & {
+  id: string;
+};
+
 // API Response Types
 interface ProductResponses {
   product: Product;
