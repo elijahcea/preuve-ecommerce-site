@@ -142,8 +142,8 @@ export default function CartModal() {
                                       </div>
                                     </div>
                                     <p className="mt-1 text-sm text-gray-500">
-                                      {item.merchandise.selectedOptions
-                                        .map((so) => so.value)
+                                      {item.merchandise.selectedValues
+                                        .map((ov) => ov.name)
                                         .join(" / ")}
                                     </p>
                                   </div>

@@ -14,41 +14,39 @@ export default function ProductDetail({ product }: { product: Product }) {
     if (!product.options.length) return undefined;
     if (product.options.length === 1 && product.options[0].values.length <= 1) {
       return product.variants.find((variant) => {
-        return variant.selectedOptions.every((selectedOption) => {
+        return variant.selectedValues.every((value) => {
           const optionValue = product.options[0].values.find(
-            (val) => selectedOption.optionValueId === val.id,
+            (val) => value.id === val.id,
           );
           return optionValue;
         });
       });
     }
     return product.variants.find((variant) => {
-      if (variant.selectedOptions.length !== product.options.length)
+      if (variant.selectedValues.length !== product.options.length)
         return undefined;
-      return variant.selectedOptions.every((selectedOption) => {
-        const stateValue = state[selectedOption.name.toLowerCase()];
-        return stateValue === selectedOption.value.toLowerCase();
+      return variant.selectedValues.every((val) => {
+        const stateValue = state[val.optionName.toLowerCase()];
+        return stateValue === val.name.toLowerCase();
       });
     });
   };
 
   const selectedVariant = getSelectedVariant();
   return (
-    <div className="grid grid-cols-2 gap-5 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start max-h-full">
       {product.featuredImage?.url ? (
-        <div>
-          <Image
-            src={product.featuredImage.url}
-            alt={product.featuredImage.altText || product.title}
-            height={750}
-            width={600}
-            style={{ width: "100%", height: "auto" }}
-          />
-        </div>
+        <Image
+          src={product.featuredImage.url}
+          alt={product.featuredImage.altText || product.title}
+          height={750}
+          width={600}
+          style={{ width: "100%", height: "auto" }}
+        />
       ) : (
         <></>
       )}
-      <div className="flex flex-col gap-4 justify-start sticky top-0 pt-5 pr-5">
+      <div className="flex flex-col gap-4 justify-start p-4 md:sticky md:top-0 md:pt-5 md:pr-5">
         <div>
           <div className="flex align-middle justify-between">
             <h2 className="font-semibold text-xl">{product.title}</h2>
@@ -58,6 +56,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   ? selectedVariant.price
                   : product.priceRange.minVariantPrice
               }
+              styles={["text-foreground/50"]}
             />
           </div>
           {product.description && (

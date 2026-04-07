@@ -15,7 +15,8 @@ import {
 } from "./utils";
 
 export async function createProductVariant(input: ProductVariantCreateInput) {
-  const { productId, sku, price, inventoryQuantity, optionValues } = input;
+  const { productId, title, sku, price, inventoryQuantity, selectedValues } =
+    input;
   if (!productId)
     throw new Error(`Please provide a product Id to update product variants.`);
 
@@ -26,12 +27,13 @@ export async function createProductVariant(input: ProductVariantCreateInput) {
 
   validateVariantPayload(input, options);
 
-  const optionValuesWithIds = assignIdsToOptionValues(optionValues, options);
+  const optionValuesWithIds = assignIdsToOptionValues(selectedValues, options);
 
   const newVariant = await prisma.$transaction(async (tx) => {
     const variant = await tx.productVariant.create({
       data: createProductVariantInput(
         productId,
+        title,
         sku,
         convertPriceForDb(price),
         inventoryQuantity,
@@ -55,7 +57,8 @@ export async function createProductVariant(input: ProductVariantCreateInput) {
 }
 
 export async function updateProductVariant(input: ProductVariantUpdateInput) {
-  const { productId, sku, price, inventoryQuantity, optionValues } = input;
+  const { productId, title, sku, price, inventoryQuantity, selectedValues } =
+    input;
   if (!productId)
     throw new Error(`Please provide a product Id to update product variants.`);
 
@@ -66,18 +69,15 @@ export async function updateProductVariant(input: ProductVariantUpdateInput) {
 
   validateVariantPayload(input, options);
 
-  const optionValuesWithIds = optionValues
-    ? assignIdsToOptionValues(optionValues, options)
-    : undefined;
-
   const updatedVariant = await prisma.$transaction(async (tx) => {
     const variant = await tx.productVariant.update({
       where: { id: input.id },
       data: updateProductVariantInput(
+        title,
         sku,
         price,
         inventoryQuantity,
-        optionValuesWithIds,
+        selectedValues,
       ),
     });
 

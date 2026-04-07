@@ -9,17 +9,13 @@ export type ProductOptionValue = {
   id: string;
   position: number;
   name: string;
+  optionName: string;
   optionId: string;
-};
-
-export type SelectedOption = {
-  name: string;
-  value: string;
-  optionValueId: string;
 };
 
 export type ProductVariant = {
   id: string;
+  title: string;
   sku: string | null;
   productTitle: string;
   price: number;
@@ -29,7 +25,7 @@ export type ProductVariant = {
   createdAt: Date;
   updatedAt: Date;
 
-  selectedOptions: SelectedOption[];
+  selectedValues: ProductOptionValue[];
 };
 
 export type Product = {
@@ -77,7 +73,7 @@ export type Merchandise = {
   price: number;
   image: Image | null;
   href: string;
-  selectedOptions: SelectedOption[];
+  selectedValues: ProductOptionValue[];
 };
 
 export type Image = {
@@ -125,11 +121,12 @@ export type OptionValueCreateInput = {
 };
 
 export interface ProductVariantCreateDTO {
+  title: string;
   sku: string | null;
   price: number;
   inventoryQuantity: number;
 
-  optionValues: VariantOptionValueCreateDTO[];
+  selectedValues: VariantOptionValueCreateDTO[];
 }
 
 export type ProductVariantCreateInput = ProductVariantCreateDTO & {
@@ -173,11 +170,12 @@ export type OptionValueUpdateInput = {
 };
 
 export interface ProductVariantUpdateDTO {
+  title?: string;
   sku?: string | null;
   price?: number;
   inventoryQuantity?: number;
 
-  optionValues?: VariantOptionValueUpdateDTO[];
+  selectedValues?: ProductOptionValue[];
 }
 
 export type ProductVariantUpdateInput = ProductVariantUpdateDTO & {
@@ -185,11 +183,21 @@ export type ProductVariantUpdateInput = ProductVariantUpdateDTO & {
   id: string;
 };
 
-export interface VariantOptionValueUpdateDTO {
+export type CollectionCreateDTO = {
+  title: string;
+  description: string;
+  productIds: string[];
+};
+
+export type CollectionUpdateDTO = {
+  title?: string;
+  description?: string;
+  productIds?: string[];
+};
+
+export type CollectionUpdateInput = CollectionUpdateDTO & {
   id: string;
-  name: string;
-  optionName: string;
-}
+};
 
 // API Response Types
 interface ProductResponses {

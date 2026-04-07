@@ -18,10 +18,12 @@ export default async function ProductPage({
   }
 
   return (
-    <ProductProvider>
-      <Suspense fallback={<ProductDetailSkeleton />}>
-        <ProductDetail product={product} />
-      </Suspense>
-    </ProductProvider>
+    <main>
+      <ProductProvider>
+        <Suspense fallback={<ProductDetailSkeleton />}>
+          <ProductDetail product={product} />
+        </Suspense>
+      </ProductProvider>
+    </main>
   );
 }

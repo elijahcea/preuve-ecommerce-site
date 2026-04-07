@@ -43,12 +43,13 @@ export async function createProduct(input: ProductCreateDTO): Promise<Product> {
     const newVariants = await Promise.all(
       variants.map(async (variant) => {
         const optionValuesWithIds = assignIdsToOptionValues(
-          variant.optionValues,
+          variant.selectedValues,
           newProduct.options,
         );
         const newVariant = await tx.productVariant.create({
           data: createProductVariantInput(
             newProduct.id,
+            variant.title,
             variant.sku,
             variant.price,
             variant.inventoryQuantity,

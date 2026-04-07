@@ -16,7 +16,7 @@ export default async function CollectionPage({
   const { collection, formattedProducts, nextCursor } = result;
 
   return (
-    <>
+    <main>
       <Suspense fallback={<CollectionPageSkeleton />}>
         <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
           <div className="flex flex-col">
@@ -27,17 +27,17 @@ export default async function CollectionPage({
               <></>
             )}
           </div>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <button className="cursor-pointer">Sort</button>
             <button className="cursor-pointer">Filter</button>
-          </div>
+          </div> */}
         </div>
-        <ul className="grid grid-cols-4 auto-rows-auto gap-7 pt-3 pb-3 pl-6 pr-6">
+        <ul className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-x-2 gap-y-4 py-4 px-2">
           {formattedProducts.map((product) => {
             return <ProductCard key={product.id} product={product} />;
           })}
         </ul>
       </Suspense>
-    </>
+    </main>
   );
 }

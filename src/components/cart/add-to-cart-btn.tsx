@@ -33,7 +33,7 @@ export default function AddToCartBtn({
         aria-disabled={!variant?.inventoryQuantity || isPending}
         disabled={!variant?.inventoryQuantity || isPending}
         className={`
-                    w-full px-6 py-3 rounded-xs font-semibold transition-opacity ease-in-out duration-250 text-white bg-foreground
+                    w-full px-6 py-3 rounded font-semibold transition-opacity ease-in-out duration-250 text-white bg-foreground
                     ${
                       !variant?.inventoryQuantity || isPending
                         ? "cursor-not-allowed opacity-50"
