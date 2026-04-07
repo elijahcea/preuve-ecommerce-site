@@ -38,6 +38,13 @@ async function main() {
         description: "Our most popular items",
       },
     }),
+    prisma.collection.create({
+      data: {
+        title: "Shop All",
+        slug: "shop-all",
+        description: "Shop all our collections",
+      },
+    }),
   ]);
 
   // Create Products with Options and Variants
@@ -56,7 +63,11 @@ async function main() {
         "https://www.aimeleondore.com/cdn/shop/files/FW25CT080_BOTANICALGARDEN_3_1600x.jpg?v=1764088217",
       featuredImageAlt: "Classic cotton t-shirt",
       collections: {
-        connect: [{ id: collections[0].id }, { id: collections[1].id }],
+        connect: [
+          { id: collections[0].id },
+          { id: collections[1].id },
+          { id: collections[3].id },
+        ],
       },
       options: {
         create: [
@@ -137,7 +148,7 @@ async function main() {
         "https://www.aimeleondore.com/cdn/shop/files/FW25WP002_DeminPants_LightWash_1_600x.jpg?v=1755718415",
       featuredImageAlt: "Slim fit jeans",
       collections: {
-        connect: [{ id: collections[2].id }],
+        connect: [{ id: collections[2].id }, { id: collections[3].id }],
       },
       options: {
         create: [
@@ -230,7 +241,11 @@ async function main() {
         "https://www.aimeleondore.com/cdn/shop/files/NB25FS009_CELERY_-19-48_600x.jpg?v=1765918985",
       featuredImageAlt: "Running sneakers",
       collections: {
-        connect: [{ id: collections[1].id }, { id: collections[2].id }],
+        connect: [
+          { id: collections[1].id },
+          { id: collections[2].id },
+          { id: collections[3].id },
+        ],
       },
       options: {
         create: [
@@ -291,7 +306,11 @@ async function main() {
         "https://www.aimeleondore.com/cdn/shop/files/SS26AH002_StripedAimv_CrestLogoCap_PineGreen_12_3200x.jpg?v=1771354032",
       featuredImageAlt: "Green & white striped hat",
       collections: {
-        connect: [{ id: collections[1].id }, { id: collections[2].id }],
+        connect: [
+          { id: collections[1].id },
+          { id: collections[2].id },
+          { id: collections[3].id },
+        ],
       },
       options: {
         create: [
@@ -334,12 +353,77 @@ async function main() {
     },
   });
 
+  const jeanShirt = await prisma.product.create({
+    data: {
+      title: "Blue Jean Shirt",
+      slug: slugify("Blue Jean Shirt"),
+      status: true,
+      hasOnlyDefaultVariant: false,
+      description: "Blue jean, regular fit, 100% cotton button shirt",
+      featuredImageURL:
+        "https://www.aimeleondore.com/cdn/shop/files/SS26WT033_MIDWASH_1_1600x.jpg?v=1772051266",
+      featuredImageAlt: "Blue jean button down shirt",
+      collections: {
+        connect: [
+          { id: collections[1].id },
+          { id: collections[2].id },
+          { id: collections[3].id },
+        ],
+      },
+      options: {
+        create: [
+          {
+            name: "Size",
+            position: 1,
+            values: {
+              create: [
+                { name: "Small", position: 1 },
+                { name: "Medium", position: 2 },
+                { name: "Large", position: 3 },
+                { name: "X-Large", position: 4 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    include: {
+      options: {
+        include: {
+          values: true,
+        },
+      },
+    },
+  });
+
+  const jeanSizeOption = jeanShirt.options.find((opt) => opt.name === "Size")!;
+  const jeanShirtSizes = jeanSizeOption.values;
+
+  const jeanShirtVariants = [];
+  for (const size of jeanShirtSizes) {
+    const variant = await prisma.productVariant.create({
+      data: {
+        title: `${size.name}`,
+        sku: `JEAN-SHIRT-${size.name.toUpperCase()}`,
+        price: 14000,
+        inventoryQuantity: Math.floor(Math.random() * 30) + 5,
+        //imageUrl: "https://example.com/images/sneakers.jpg",
+        //imageAlt: `Running sneakers size ${size.name}`,
+        productId: jeanShirt.id,
+        selectedValues: {
+          connect: [{ id: size.id }],
+        },
+      },
+    });
+    jeanShirtVariants.push(variant);
+  }
+
   console.log("✅ Database seeded successfully!");
   console.log(`
 📊 Summary:
 - Collections: ${collections.length}
-- Products: 4
-- Product Variants: ${tshirtVariants.length + jeansVariants.length + sneakerVariants.length + 1}
+- Products: 5
+- Product Variants: ${tshirtVariants.length + jeansVariants.length + sneakerVariants.length + 1 + jeanShirtVariants.length}
   `);
 }
 
