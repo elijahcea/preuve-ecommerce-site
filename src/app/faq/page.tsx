@@ -30,7 +30,7 @@ export default function Faq() {
     },
   ];
   return (
-    <main className="flex flex-col justify-center items-center h-full">
+    <main className="flex flex-col justify-center items-center my-auto">
       <h1 className="font-semibold text-lg">FAQ</h1>
 
       <section className="w-full max-w-2xl flex flex-col items-center px-4 text-sm divide-y divide-foreground/10">
