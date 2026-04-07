@@ -11,7 +11,7 @@ export default function ProductCard({
   return (
     <li>
       <Link href={`/products/${product.slug}`}>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {product.featuredImage?.url ? (
             <Image
               src={product.featuredImage.url}
@@ -23,9 +23,12 @@ export default function ProductCard({
           ) : (
             <></>
           )}
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between gap-2 text-sm px-1 md:px-2">
             <p>{product.title}</p>
-            <Price amount={product.priceRange.minVariantPrice} />
+            <Price
+              amount={product.priceRange.minVariantPrice}
+              styles={["text-foreground/50"]}
+            />
           </div>
         </div>
       </Link>

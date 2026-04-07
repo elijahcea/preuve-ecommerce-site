@@ -34,7 +34,7 @@ export default async function Search({
             <button className="cursor-pointer">Filter</button>
           </div>
         </div> */}
-        <ul className="grid grid-cols-4 auto-rows-auto gap-7 pt-3 pb-3 pl-6 pr-6">
+        <ul className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-x-2 gap-y-4 py-4 px-2">
           {results?.map((product) => {
             return <ProductCard key={product.id} product={product} />;
           })}
