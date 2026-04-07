@@ -16,7 +16,7 @@ export default async function CollectionPage({
   const { collection, formattedProducts, nextCursor } = result;
 
   return (
-    <>
+    <main>
       <Suspense fallback={<CollectionPageSkeleton />}>
         <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
           <div className="flex flex-col">
@@ -38,6 +38,6 @@ export default async function CollectionPage({
           })}
         </ul>
       </Suspense>
-    </>
+    </main>
   );
 }

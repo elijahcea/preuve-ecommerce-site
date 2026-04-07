@@ -23,7 +23,7 @@ export default async function Search({
   const results = await searchProducts(q.toString());
 
   return (
-    <div className="flex flex-col items-center pt-5 gap-5">
+    <main className="flex flex-col items-center pt-5 gap-5">
       <h1 className="font-semibold">{`Your search for "${q}" revealed the following:`}</h1>
       <SearchBar placeholder="Search our store" />
       <p>Results {`(${results?.length || 0})`}</p>
@@ -40,6 +40,6 @@ export default async function Search({
           })}
         </ul>
       </Suspense>
-    </div>
+    </main>
   );
 }
