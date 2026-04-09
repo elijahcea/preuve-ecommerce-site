@@ -75,7 +75,7 @@ export async function PUT(
 
     const isAuthorized = hasPermissions(
       authPayload.permissions as Array<string>,
-      "update:collections",
+      ["update:collections"],
     );
 
     if (!isAuthorized) {
@@ -158,7 +158,7 @@ export async function DELETE(
 
     const isAuthorized = hasPermissions(
       authPayload.permissions as Array<string>,
-      "delete:collections",
+      ["delete:collections"],
     );
 
     if (!isAuthorized) {

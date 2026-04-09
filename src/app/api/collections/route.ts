@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     const isAuthorized = hasPermissions(
       authPayload.permissions as Array<string>,
-      "create:collections",
+      ["create:collections"],
     );
 
     if (!isAuthorized) {

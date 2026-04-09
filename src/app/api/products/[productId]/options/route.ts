@@ -41,7 +41,7 @@ export async function POST(
 
     const isAuthorized = hasPermissions(
       authPayload.permissions as Array<string>,
-      "create:options",
+      ["create:options"],
     );
 
     if (!isAuthorized) {
