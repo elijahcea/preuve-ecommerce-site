@@ -73,7 +73,7 @@ export const updateProductInput = (
   featuredImageAlt?: string | null,
 ) => {
   return {
-    ...(status && { status }),
+    ...(status !== undefined && { status }),
     ...(title && { slug: slugify(title) }),
     ...(title && { title }),
     ...(description && { description }),
