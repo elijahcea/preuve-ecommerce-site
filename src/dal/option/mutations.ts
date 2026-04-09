@@ -43,17 +43,25 @@ export async function updateOption(input: OptionUpdateInput) {
       },
     });
 
-    input.values.forEach(async (val, idx) => {
-      await tx.productOptionValue.upsert({
-        where: { productOptionId: id, id: val.id },
-        update: { name: val.name },
-        create: {
-          productOptionId: id,
-          name: val.name,
-          position: idx + 1,
-        },
-      });
-    });
+    await Promise.all(
+      input.values.map(async (val, idx) => {
+        await tx.productOptionValue.upsert({
+          where: {
+            name_productOptionId: {
+              name: name,
+              productOptionId: id,
+            },
+            id: val.id,
+          },
+          update: { name: val.name },
+          create: {
+            productOptionId: id,
+            name: val.name,
+            position: idx + 1,
+          },
+        });
+      }),
+    );
   });
 
   const updatedOption = await prisma.productOption.findUniqueOrThrow({
