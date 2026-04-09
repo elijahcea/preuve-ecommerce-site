@@ -27,12 +27,16 @@ export const createProductInput = (
   hasOnlyDefaultVariant: boolean,
   collectionIds: string[],
   options: OptionCreateDTO[],
+  featuredImageURL?: string | null,
+  featuredImageAlt?: string | null,
 ) => {
   return {
     slug: slugify(title),
     status,
     title,
     description,
+    featuredImageURL,
+    featuredImageAlt,
     hasOnlyDefaultVariant,
     collections: {
       connect: collectionIds.map((collectionId) => {
@@ -65,12 +69,16 @@ export const updateProductInput = (
   title?: string,
   description?: string,
   collectionIds?: string[],
+  featuredImageURL?: string | null,
+  featuredImageAlt?: string | null,
 ) => {
   return {
     ...(status && { status }),
     ...(title && { slug: slugify(title) }),
     ...(title && { title }),
     ...(description && { description }),
+    ...(featuredImageURL && { featuredImageURL }),
+    ...(featuredImageAlt && { featuredImageAlt }),
     ...(collectionIds && {
       collections: {
         set: collectionIds.map((collectionId) => {
