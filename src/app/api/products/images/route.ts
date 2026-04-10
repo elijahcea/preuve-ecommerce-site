@@ -1,5 +1,5 @@
 import { hasPermissions, validateToken } from "@/src/dal/utils";
-import { generateCloudinarySignatureAction } from "@/src/lib/cloudinary";
+import { generateCloudinarySignatureAction } from "@/src/image/cloudinary";
 import { GenerateSignatureDTO } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
