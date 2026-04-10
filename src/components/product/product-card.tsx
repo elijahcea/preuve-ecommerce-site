@@ -16,6 +16,7 @@ export default function ProductCard({
             <Image
               src={product.featuredImage.url}
               alt={product.featuredImage.altText || product.title}
+              loading="lazy"
               height={750}
               width={600}
               style={{ width: "100%", height: "auto" }}
