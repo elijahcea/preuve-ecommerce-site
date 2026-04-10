@@ -77,8 +77,8 @@ export const updateProductInput = (
     ...(title && { slug: slugify(title) }),
     ...(title && { title }),
     ...(description && { description }),
-    ...(featuredImageURL && { featuredImageURL }),
-    ...(featuredImageAlt && { featuredImageAlt }),
+    ...(featuredImageURL !== undefined && { featuredImageURL }),
+    ...(featuredImageAlt !== undefined && { featuredImageAlt }),
     ...(collectionIds && {
       collections: {
         set: collectionIds.map((collectionId) => {
