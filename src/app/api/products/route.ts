@@ -6,6 +6,7 @@ import {
   ProductCreateDTO,
 } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
+import { hasPermissions, validateToken } from "@/src/dal/utils";
 
 export async function GET(
   request: NextRequest,
@@ -33,6 +34,52 @@ export async function POST(
   request: NextRequest,
 ): Promise<NextResponse<CreateProductResponse>> {
   try {
+    const authHeader = request.headers.get("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "No token provided",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const token = authHeader.split(" ")[1];
+    const authPayload = await validateToken(token);
+
+    if (!authPayload) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Invalid token",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const isAuthorized = hasPermissions(
+      authPayload.permissions as Array<string>,
+      ["create:products"],
+    );
+
+    if (!isAuthorized) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Unauthorized",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const body: ProductCreateDTO = await request.json();
     const newProduct = await createProduct(body);
 

@@ -34,7 +34,7 @@ export async function validateToken(token: string) {
 
 export function hasPermissions(
   permissions: string[],
-  requiredPermission: string,
+  requiredPermissions: string[],
 ) {
-  return permissions.includes(requiredPermission);
+  return permissions.some((p) => requiredPermissions.includes(p));
 }

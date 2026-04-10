@@ -105,6 +105,7 @@ export default function CartModal() {
                                         item.merchandise.productTitle
                                       }
                                       src={item.merchandise.image.url}
+                                      loading="lazy"
                                       height={750}
                                       width={600}
                                       style={{ width: "100%", height: "auto" }}

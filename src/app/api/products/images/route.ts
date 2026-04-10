@@ -1,30 +1,7 @@
-import { createCollection } from "@/src/dal/collection/mutations";
-import { getAllCollections } from "@/src/dal/collection/queries";
 import { hasPermissions, validateToken } from "@/src/dal/utils";
-import { CollectionCreateDTO, GetCollectionsResponse } from "@/src/lib/types";
+import { generateCloudinarySignatureAction } from "@/src/image/cloudinary";
+import { GenerateSignatureDTO } from "@/src/lib/types";
 import { NextRequest, NextResponse } from "next/server";
-
-export async function GET(
-  request: NextRequest,
-): Promise<NextResponse<GetCollectionsResponse>> {
-  try {
-    const collections = await getAllCollections();
-
-    const response = {
-      collections: collections ?? [],
-    };
-
-    return new NextResponse(JSON.stringify(response), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    return new NextResponse(JSON.stringify(`Internal server error: ${e}`), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     const isAuthorized = hasPermissions(
       authPayload.permissions as Array<string>,
-      ["create:collections"],
+      ["create:products", "update:products"],
     );
 
     if (!isAuthorized) {
@@ -74,20 +51,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body: CollectionCreateDTO = await request.json();
+    const body: GenerateSignatureDTO = await request.json();
 
-    const newCollection = await createCollection(body);
+    const cloudinarySignature = await generateCloudinarySignatureAction(body);
 
-    const response = {
-      collection: newCollection,
-    };
-
-    return new NextResponse(JSON.stringify(response), {
+    return new NextResponse(JSON.stringify(cloudinarySignature), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.log(e);
     return new NextResponse(JSON.stringify(`Internal server error: ${e}`), {
       status: 500,
       headers: { "Content-Type": "application/json" },

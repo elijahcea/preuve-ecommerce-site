@@ -60,7 +60,7 @@ async function main() {
       description:
         "A comfortable, everyday t-shirt made from 100% organic cotton",
       featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/FW25CT080_BOTANICALGARDEN_3_1600x.jpg?v=1764088217",
+        "https://res.cloudinary.com/dedr8n2bj/image/upload/v1775855788/FW25CT080_BOTANICALGARDEN_3_1600x_fdm01w.webp",
       featuredImageAlt: "Classic cotton t-shirt",
       collections: {
         connect: [
@@ -145,7 +145,7 @@ async function main() {
       description:
         "Modern slim fit jeans with stretch denim for all-day comfort",
       featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/FW25WP002_DeminPants_LightWash_1_600x.jpg?v=1755718415",
+        "https://res.cloudinary.com/dedr8n2bj/image/upload/v1775855787/FW25WP002_DeminPants_LightWash_1_600x_gwgq37.webp",
       featuredImageAlt: "Slim fit jeans",
       collections: {
         connect: [{ id: collections[2].id }, { id: collections[3].id }],
@@ -238,7 +238,7 @@ async function main() {
       hasOnlyDefaultVariant: false,
       description: "Lightweight running sneakers with excellent cushioning",
       featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/NB25FS009_CELERY_-19-48_600x.jpg?v=1765918985",
+        "https://res.cloudinary.com/dedr8n2bj/image/upload/v1775855787/NB25FS009_CELERY_-19-48_600x_m54o3a.webp",
       featuredImageAlt: "Running sneakers",
       collections: {
         connect: [
@@ -303,7 +303,7 @@ async function main() {
       hasOnlyDefaultVariant: true,
       description: "Green & white striped hat",
       featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/SS26AH002_StripedAimv_CrestLogoCap_PineGreen_12_3200x.jpg?v=1771354032",
+        "https://res.cloudinary.com/dedr8n2bj/image/upload/v1775855788/SS26AH002_StripedAimv_CrestLogoCap_PineGreen_12_3200x_bij01u.webp",
       featuredImageAlt: "Green & white striped hat",
       collections: {
         connect: [
@@ -361,7 +361,7 @@ async function main() {
       hasOnlyDefaultVariant: false,
       description: "Blue jean, regular fit, 100% cotton button shirt",
       featuredImageURL:
-        "https://www.aimeleondore.com/cdn/shop/files/SS26WT033_MIDWASH_1_1600x.jpg?v=1772051266",
+        "https://res.cloudinary.com/dedr8n2bj/image/upload/v1775855787/SS26WT033_MIDWASH_1_1600x_sqjogh.jpg",
       featuredImageAlt: "Blue jean button down shirt",
       collections: {
         connect: [

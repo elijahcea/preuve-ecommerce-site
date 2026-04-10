@@ -20,8 +20,15 @@ import {
 import { getProduct } from "./queries";
 
 export async function createProduct(input: ProductCreateDTO): Promise<Product> {
-  const { status, title, description, collectionIds, options, variants } =
-    input;
+  const {
+    status,
+    title,
+    description,
+    featuredImage,
+    collectionIds,
+    options,
+    variants,
+  } = input;
 
   validateProductCreatePayload(input);
 
@@ -36,6 +43,8 @@ export async function createProduct(input: ProductCreateDTO): Promise<Product> {
         hasOnlyDefaultVariant,
         collectionIds,
         options,
+        featuredImage?.url,
+        featuredImage?.altText,
       ),
       include: includeProductAllRelations,
     });
@@ -81,7 +90,14 @@ export async function updateProduct(
 
   const updatedProduct = await prisma.product.update({
     where: { id },
-    data: updateProductInput(status, title, description, collectionIds),
+    data: updateProductInput(
+      status,
+      title,
+      description,
+      collectionIds,
+      featuredImage?.url,
+      featuredImage?.altText,
+    ),
     include: includeProductAllRelations,
   });
 
