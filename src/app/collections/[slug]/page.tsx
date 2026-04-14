@@ -1,6 +1,6 @@
-import { Suspense } from "react";
 import ProductCard from "@/src/components/product/product-card";
 import { getCollectionProducts } from "@/src/dal/product/queries";
+import { notFound } from "next/navigation";
 
 export default async function CollectionPage({
   params,
@@ -10,33 +10,31 @@ export default async function CollectionPage({
   const { slug } = await params;
 
   const result = await getCollectionProducts({ collectionSlug: slug });
-  if (!result) throw new Error("Collection not found.");
+  if (!result) return notFound();
 
   const { collection, formattedProducts, nextCursor } = result;
 
   return (
     <main>
-      <Suspense fallback="">
-        <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
-          <div className="flex flex-col">
-            <h2>{collection.title}</h2>
-            {collection.description ? (
-              <p className="text-xs">{collection.description}</p>
-            ) : (
-              <></>
-            )}
-          </div>
-          {/* <div className="flex gap-2">
+      <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
+        <div className="flex flex-col">
+          <h2>{collection.title}</h2>
+          {collection.description ? (
+            <p className="text-xs">{collection.description}</p>
+          ) : (
+            <></>
+          )}
+        </div>
+        {/* <div className="flex gap-2">
             <button className="cursor-pointer">Sort</button>
             <button className="cursor-pointer">Filter</button>
           </div> */}
-        </div>
-        <ul className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-x-2 gap-y-4 py-4 px-2">
-          {formattedProducts.map((product) => {
-            return <ProductCard key={product.id} product={product} />;
-          })}
-        </ul>
-      </Suspense>
+      </div>
+      <ul className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-x-2 gap-y-4 py-4 px-2">
+        {formattedProducts.map((product) => {
+          return <ProductCard key={product.id} product={product} />;
+        })}
+      </ul>
     </main>
   );
 }
