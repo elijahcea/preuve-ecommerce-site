@@ -1,7 +1,6 @@
 import SearchBar from "@/src/components/search/search-bar";
 import { searchProducts } from "@/src/dal/product/queries";
 import { Suspense } from "react";
-import { CollectionPageSkeleton } from "@/src/components/skeletons";
 import ProductCard from "@/src/components/product/product-card";
 
 export default async function Search({
@@ -27,7 +26,7 @@ export default async function Search({
       <h1 className="font-semibold">{`Your search for "${q}" revealed the following:`}</h1>
       <SearchBar placeholder="Search our store" />
       <p>Results {`(${results?.length || 0})`}</p>
-      <Suspense fallback={<CollectionPageSkeleton />}>
+      <Suspense fallback="">
         {/* <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
           <div className="flex gap-2">
             <button className="cursor-pointer">Sort</button>
