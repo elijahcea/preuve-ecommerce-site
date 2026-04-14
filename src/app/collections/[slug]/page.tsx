@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import ProductCard from "@/src/components/product/product-card";
-import { CollectionPageSkeleton } from "@/src/components/skeletons";
 import { getCollectionProducts } from "@/src/dal/product/queries";
 
 export default async function CollectionPage({
@@ -17,7 +16,7 @@ export default async function CollectionPage({
 
   return (
     <main>
-      <Suspense fallback={<CollectionPageSkeleton />}>
+      <Suspense fallback="">
         <div className="flex justify-between gap-2 p-3 align-middle border-b-[#e5e5e5] border-b">
           <div className="flex flex-col">
             <h2>{collection.title}</h2>

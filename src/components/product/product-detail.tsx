@@ -33,8 +33,9 @@ export default function ProductDetail({ product }: { product: Product }) {
   };
 
   const selectedVariant = getSelectedVariant();
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start max-h-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start h-full">
       {product.featuredImage?.url ? (
         <Image
           src={product.featuredImage.url}
