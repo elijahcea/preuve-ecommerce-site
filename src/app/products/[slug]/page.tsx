@@ -1,6 +1,6 @@
 import ProductDetail from "@/src/components/product/product-detail";
+import ProductDetailSkeleton from "@/src/components/skeletons/product-detail-skeleton";
 import ProductProvider from "@/src/contexts/product-provider";
-import { ProductDetailSkeleton } from "@/src/components/skeletons";
 import { getProduct } from "@/src/dal/product/queries";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
