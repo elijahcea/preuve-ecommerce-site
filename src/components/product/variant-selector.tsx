@@ -3,12 +3,6 @@
 import { useProductContext } from "../../contexts/product-provider";
 import { ProductOption, ProductVariant } from "../../lib/types";
 
-type Combination = {
-  id: string;
-  availableForSale: boolean;
-  [key: string]: string | boolean;
-};
-
 export default function VariantSelector({
   options,
   variants,
