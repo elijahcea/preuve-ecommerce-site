@@ -20,9 +20,7 @@ export default async function ProductPage({
   return (
     <main>
       <ProductProvider>
-        <Suspense fallback={<ProductDetailSkeleton />}>
-          <ProductDetail product={product} />
-        </Suspense>
+        <ProductDetail product={product} />
       </ProductProvider>
     </main>
   );
