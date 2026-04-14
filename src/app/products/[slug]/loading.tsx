@@ -1,3 +1,5 @@
+import ProductDetailSkeleton from "@/src/components/skeletons/product-detail-skeleton";
+
 export default function Loading() {
-  return <div>Loading product...</div>;
+  return <ProductDetailSkeleton />;
 }

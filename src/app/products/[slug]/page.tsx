@@ -1,9 +1,7 @@
 import ProductDetail from "@/src/components/product/product-detail";
-import ProductDetailSkeleton from "@/src/components/skeletons/product-detail-skeleton";
 import ProductProvider from "@/src/contexts/product-provider";
 import { getProduct } from "@/src/dal/product/queries";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 export default async function ProductPage({
   params,
@@ -20,9 +18,7 @@ export default async function ProductPage({
   return (
     <main>
       <ProductProvider>
-        <Suspense fallback={<ProductDetailSkeleton />}>
-          <ProductDetail product={product} />
-        </Suspense>
+        <ProductDetail product={product} />
       </ProductProvider>
     </main>
   );
