@@ -12,7 +12,7 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          INSTRAGRAM
+          INSTAGRAM
         </a>
         <Link href="/contact">CONTACT US</Link>
       </ul>
